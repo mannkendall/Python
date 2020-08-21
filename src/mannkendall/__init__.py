@@ -8,4 +8,4 @@ SPDX-License-Identifier: BSD-3-Clause
 """
 
 # Get the version of the code to behave as usual
-from mk_version import VERSION as __version__
+from .mk_version import VERSION as __version__

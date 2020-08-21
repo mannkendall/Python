@@ -11,10 +11,8 @@ from pathlib import Path
 from setuptools import setup, find_packages  # Always prefer setuptools over distutils
 
 # Get the VERSION from the dedicate file
-with open(Path('.') / 'src' / 'mk_version.py') as fid:
-    version = next(
-        line.split("'")[1] for line in fid.readlines() if 'VERSION' in line
-    )
+with open(Path('.') / 'src' / 'mannkendall' / 'mk_version.py') as fid:
+    version = next(line.split("'")[1] for line in fid.readlines() if 'VERSION' in line)
 
 # Extract the long description from the README
 with open("README.md", "r") as fh:

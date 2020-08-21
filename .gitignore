@@ -5,5 +5,10 @@
 docs/build/
 docs/source/modules
 
+# pytest
+.pytest_cache
+
 # Distribution / packaging
 build/
+*.egg-info
+__pycache__
