@@ -1,0 +1,9 @@
+# MacOS stuff
+*.DS_Store
+
+# Sphinx documentation
+docs/build/
+docs/source/modules
+
+# Distribution / packaging
+build/
