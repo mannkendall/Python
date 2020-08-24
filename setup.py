@@ -37,7 +37,8 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     python_requires='>=3.8.0',
-    install_requires=["numpy >= 1.19"],
+    install_requires=["numpy >= 1.19",
+                      "pytest"],
 
     classifiers=[
 
