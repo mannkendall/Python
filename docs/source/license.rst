@@ -1,0 +1,4 @@
+.. include:: ./substitutions.rst
+
+License
+-------
