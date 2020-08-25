@@ -7,12 +7,12 @@ mannkendall. :heart_eyes: :tada:
 
 There are many ways that you can do so, including by:
 - [reporting a bug](#reporting-a-bug)
-- fixing an [known issue](https://github.com/MeteoSwiss-MDA/mannkendall/issues?q=is%3Aissue+),
+- fixing a [known issue](https://github.com/MeteoSwiss-MDA/mannkendall/issues?q=is%3Aissue+),
 - implementing a new functionality,
-- addding more functional tests, and/or
+- adding more functional tests, and/or
 - improving the documentation:
-  * in the code, with better docstrings
-  * in this repository (for example this very file !)
+  * in the code, with better docstrings,
+  * in this repository (for example this very file !), and/or
   * in the website, via the docs `.rst` files
 
 All these contributions are welcome, and what follows should help you get started. Note that
@@ -55,7 +55,7 @@ key facts about the mannkendall code and its repository:
     copyright is owned by MeteoSwiss, with the following [authors](AUTHORS).
    * mannkendall adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
    * The adopted styles are described [here](#styles).
-   * mannkendall *operational* dependencies are specified in `setup.py`.
+   * mannkendall dependencies are specified in `setup.py`.
    * There is a human-readable [Changelog](CHANGELOG).
 
 2. **Github repository:**
@@ -113,7 +113,7 @@ key facts about the mannkendall code and its repository:
 
     """
 ```
-You should of course feel free to use more of the tools offered by
+You should feel free to use more of the tools offered by
 [sphinx](https://www.sphinx-doc.org/en/master/),
 [napoleon](https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html), and
 [Google Doc Strings](https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html#example-google). But if you do, **please make sure that there are no errors upon generating the docs !**
