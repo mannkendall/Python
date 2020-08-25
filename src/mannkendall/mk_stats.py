@@ -16,7 +16,7 @@ import numpy as np
 from scipy.interpolate import interp1d
 
 # Import from this package
-import .mk_tools as mkt
+from . import mk_tools as mkt
 
 def std_normal_var(s, var_obs):
     """ Compute the normalized standard variable Z.
@@ -170,7 +170,7 @@ def s_test(obs, obs_dts):
         # Compute s for that year, by summing the signs for the differences with all the upcoming
         # years
         sij[yr_ind] = np.nansum([np.sign(item - obs[obs_years == yr])
-             for yr2 in range(yr+1, max_year+1)
-             for item in obs[obs_year == yr2]])
+                                 for yr2 in range(yr+1, max_year+1)
+                                 for item in obs[obs_years == yr2]])
 
     return (np.nansum(sij), sij, n)
