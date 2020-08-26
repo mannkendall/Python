@@ -97,7 +97,6 @@ def test_nanautocorr():
     obs = TEST_DATA[:, 6]
     out = mkt.nanautocorr(obs, 6, r=5)
 
-    # Apply some quick scaling, because this is how I got the test data
     assert np.all(np.round(out[0], 4) ==
                   np.array([1, 0.8257, 0.8852, 0.7600, 0.7081, 0.8066, 0.5964]))
     assert np.all(np.round(out[1], 4) == 1.1589)

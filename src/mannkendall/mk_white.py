@@ -71,8 +71,8 @@ def nanprewhite_arok(obs):
     k_max = np.min([5, nlag])
 
     # Test the residue of the AR(Kmax)
-    res = np.zeros((len(obs), k_max)) * np.nan
-    y = np.zeros_like(res) * np.nan
+    #res = np.zeros((len(obs), k_max)) * np.nan # Not used
+    y = np.zeros((len(obs), k_max)) * np.nan
 
     aic2 = np.zeros(k_max) * np.nan
     bic2 = np.zeros(k_max) * np.nan
@@ -90,10 +90,11 @@ def nanprewhite_arok(obs):
 
         aic2[ind] = n_valid * np.log(n_valid * se[ind]**2/(n_valid-ind)) + 2*(ind)
         bic2[ind] = n_valid * np.log(n_valid * se[ind]**2/(n_valid-ind)) + (ind+2)*np.log(n_valid)
-        #res[ind:, ind] = obs[ind:] - y[ind:, ind]
+        #res[ind:, ind] = obs[ind:] - y[ind:, ind] # Not used
 
     # TODO: aic2 and bic2 are still wrong
     # Need to debug this !!!
+
 
     # Autocorrelation degree
     k = np.max([np.argmin(aic2), np.argmin(bic2)])
