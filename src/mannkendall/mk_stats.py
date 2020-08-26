@@ -10,29 +10,29 @@ This file contains the core statistical routines for the package.
 """
 
 # Import the required packages
+from datetime import datetime
 import numpy as np
 from scipy.interpolate import interp1d
 
-def std_normal_var(s, var_data):
+# Import from this package
+from . import mk_tools as mkt
+
+def std_normal_var(s, k_var):
     """ Compute the normalized standard variable Z.
 
     From Gilbert (1987).
 
     Args:
-        data (float): 1-D numpy array with the data.
-        var_data (float): 1-D numpy array with the variance.
+        s (int): S statistics.
+        k_var (float): the variance computed from Kendall_var().
 
     Returns:
-        ndarray: the normalised variance.
-
-    Todo:
-        * check the docstrings
-        * include better reference
+        float: the normalized Z statistics.
 
     """
 
     # First some anity checks.
-    for item in [s, var_data]:
+    for item in [s, k_var]:
         if not isinstance(item, (float, int)):
             raise Exception('Ouch ! Variables must be of type float, not: %s' % (type(item)))
 
@@ -41,9 +41,9 @@ def std_normal_var(s, var_data):
         return 0.0
 
     # Deal with the other cases.
-    return (s + np.sign(s))/var_data**0.5
+    return (s - np.sign(s))/k_var**0.5
 
-def sen_slope(time, data, variance, confidence=90.):
+def sen_slope(obs_dts, obs, k_var, confidence=90.):
     """ Compute Sen's slope.
 
     Specifically, this computes the median of the slopes for each interval::
@@ -54,17 +54,17 @@ def sen_slope(time, data, variance, confidence=90.):
     point is small, such as for yearly averages for a 10 year trend.
 
     Args:
-        time (list of datetime.datetime): a list of observation times.
-        data (ndarray of floats): the data array. Must be 1-D.
-        variance (float): Kendall variance, computed with Kendall_var.
+        obs_dts (ndarray of datetime.datetime): an array of observation times. Must be 1-D.
+        obs (ndarray of floats): the data array. Must be 1-D.
+        k_var (float): Kendall variance, computed with Kendall_var.
         confidence (float, optional): the desired confidence limit, in %. Must be 90 or 95.
                                       Defaults to 90.
 
     Return:
         (float, float, float): Sen's slope, lower confidence limit, upper confidence limit.
 
-    Todo:
-        * check/fix this README
+    Note:
+        The slopes are returned in units of 1/s.
 
     """
 
@@ -73,38 +73,98 @@ def sen_slope(time, data, variance, confidence=90.):
         raise Exception('Ouch! confidence should be of type int, not: %s' % (type(confidence)))
     if confidence not in [90, 95]:
         raise Exception('Ouch ! confidence must be 90 or 95, not: %f' % (float(confidence)))
-    if not isinstance(variance, (int, float)):
-        raise Exception('Ouch ! The variance must be of type float, not: %s' % (type(variance)))
+    if not isinstance(k_var, (int, float)):
+        raise Exception('Ouch ! The variance must be of type float, not: %s' % (type(k_var)))
 
-    for item in [time, data]:
-        if np.any(np.isnan(item)):
-            raise Exception('Ouch ! Something bad is going to happen because of unexpected nans!')
-
-    l = len(data)
+    l = len(obs)
 
     # Let's compute the slope for all the possible pairs.
     d = np.array([item for i in range(0, l-1)
-                  for item in list((data[i+1:l] - data[i])/(time[i+1:l] - time[i]))])
+                  for item in list((obs[i+1:l] - obs[i])/mkt.dt_to_s(obs_dts[i+1:l] - obs_dts[i]))])
+
+    # Let's only keep the values that are valid
+    d = d[~np.isnan(d)]
 
     # Let's compute the median slope
     slope = np.nanmedian(d)
 
     # Apply the confidence limits
-    # Todo: can I simplify this ?
+    # Todo: can we generalize this ? Where are 1.645 and 1.96 coming from ?
     if confidence == 90:
-        cconf = 1.645 * variance**0.5
+        cconf = 1.645 * k_var**0.5
     elif confidence == 95:
-        cconf = 1.96 * variance**0.5
+        cconf = 1.96 * k_var**0.5
     else:
         raise Exception("Ouch ! This error is impossible.")
 
-    m_1 = 0.5 * (len(d) - cconf)
-    m_2 = 0.5 * (len(d) + cconf)
+    # Note: because python starts at 0 and not 1, we need an additional "-1" to the following
+    # values of m_1 and m_2 to match the matlab implementation.
+    m_1 = 0.5 * (len(d) - cconf) - 1
+    m_2 = 0.5 * (len(d) + cconf) - 1
 
     # Let's setup a quick interpolation scheme to get the best possible confidence limits
     f = interp1d(np.arange(0, len(d), 1), np.sort(d), kind='linear', fill_value=(d[0], d[-1]),
                  assume_sorted=True, bounds_error=False)
+
     lcl = f(m_1)
     ucl = f(m_2)
 
     return (slope, lcl, ucl)
+
+def s_test(obs, obs_dts):
+    """ Compute the S statistics (Si) for the Mann-Kendall test.
+
+    Args:
+        obs (ndarray of floats): the observations array. Must be 1-D.
+        obs_dts (ndarray of datetime.datetime): a list of observation datetimes.
+
+    Returns:
+        (float, ndarray): S, n
+
+    Todo:
+        * fix/improve this docstring
+
+    """
+    # If the user gave me a list ... be nice and deal with it.
+    if isinstance(obs, list) and np.all([isinstance(item, (float, int)) for item in obs]):
+        obs = np.array(obs)
+
+    # Idem for the obs_dts
+    if isinstance(obs_dts, list) and np.all([isinstance(item, datetime) for item in obs_dts]):
+        obs_dts = np.array(obs_dts)
+
+    # Some sanity checks first
+    for item in [obs, obs_dts]:
+        if not isinstance(item, np.ndarray):
+            raise Exception('Ouch ! I was expecting some numpy.ndarray, not: %s' % (type(item)))
+        if np.ndim(item) != 1:
+            raise Exception('Ouch ! The numpy.ndarray must have 1 dimensions, not: %i' %
+                            (np.ndim(item)))
+        if len(item) != len(obs):
+            raise Exception('Ouch ! obs and obs_dts should have the same length !')
+
+    # Check that I was indeed given proper datetimes !
+    if np.any([not isinstance(item, datetime) for item in obs_dts]):
+        raise Exception('Ouch ! I need proper datetime.datetime entities !')
+
+    # Find the limiting years
+    obs_years = np.array([item.year for item in obs_dts])
+    min_year = np.min(obs_years)
+    max_year = np.max(obs_years)
+
+    # An array to keep track of the number of valid data points in each season
+    n = np.zeros(max_year - min_year + 1) * np.nan
+    # Create a vector to keep track of the results
+    sij = np.zeros(max_year - min_year + 1) * np.nan
+
+    for (yr_ind, yr) in enumerate(range(min_year, max_year+1)):
+        #How valid points do I have :
+        n[yr_ind] = np.count_nonzero(~np.isnan(obs[obs_years == yr]))
+
+        # Compute s for that year, by summing the signs for the differences with all the upcoming
+        # years
+        sij[yr_ind] = np.nansum([np.sign(item - obs[obs_years == yr])
+                                 for yr2 in range(yr+1, max_year+1)
+                                 for item in obs[obs_years == yr2]])
+
+    return (np.nansum(sij), n)

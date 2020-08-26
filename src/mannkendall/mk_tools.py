@@ -12,6 +12,26 @@ This file contains useful tool for the package.
 # Import the required packages
 import numpy as np
 
+
+def dt_to_s(time_deltas):
+    """ A convenience function that converts an array of datetime.timedeltas into an array of
+    floats corresponding to the total_seconds() of each elements.
+
+    Args:
+        time_deltas (ndarray of datetime.timedelta): array of timedeltas.
+
+    Returns:
+        ndaray of flot: the same array with all elements converted to total_seconds().
+
+    Note:
+        Adapted from `SO <https://stackoverflow.com/questions/19039080/elegant-way-of-convert-a-numpy-array-containing-datetime-timedelta-into-seconds>`__.
+        Reply by prgao.
+    """
+
+    f = np.vectorize(lambda x: x.total_seconds())
+
+    return f(time_deltas)
+
 def nb_tie(data, resolution):
     """ Compute the number of data point considered to be equivalent (and to be treated as "ties").
 
