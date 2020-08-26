@@ -11,7 +11,6 @@ This file contains the core statistical routines for the package.
 
 # Import the required packages
 from datetime import datetime
-import collections
 import numpy as np
 from scipy.interpolate import interp1d
 
