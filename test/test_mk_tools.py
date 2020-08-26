@@ -11,11 +11,17 @@ This file contains test functions for the mk_tools module.
 
 # Import from python packages
 from datetime import datetime
+from pathlib import Path
 import numpy as np
 import pytest
 
 # Import from current package
 from mannkendall import mk_tools as mkt
+
+# Load some local test_data
+TEST_DATA_FN = Path(__file__).parent / 'test_data' / 'test_data_C.csv'
+TEST_DATA = np.genfromtxt(TEST_DATA_FN, skip_header=1, delimiter=';',
+                          missing_values='NaN', filling_values=np.nan)
 
 def test_dt_to_s():
     """ Test the dt_to_s utility function.
@@ -87,3 +93,31 @@ def test_nanautocorr():
 
     assert np.all(np.round(out[0], 4) == np.array([1.0, -0.4418, 0.1836]))
     assert np.all(np.round(out[1], 4) == 0.5727)
+
+    obs = TEST_DATA[:, 6]
+    out = mkt.nanautocorr(obs, 6, r=5)
+
+    # Apply some quick scaling, because this is how I got the test data
+    assert np.all(np.round(out[0], 4) ==
+                  np.array([1, 0.8257, 0.8852, 0.7600, 0.7081, 0.8066, 0.5964]))
+    assert np.all(np.round(out[1], 4) == 1.1589)
+
+def test_levinson():
+    """ Test the levinson function.
+
+    This method specifically tests:
+        - method returns are similar to the matlab implementation.
+    """
+
+    # Compute the autocorrelation
+    (x, _) = mkt.nanautocorr(TEST_DATA[:, 6], 6, r=5)
+
+    # Compute the confidence limits for the autocorrelation
+    x_1 = x / np.count_nonzero(~np.isnan(TEST_DATA[:, 6]))
+    n = 5
+
+    out = mkt.levinson(x_1, n)
+
+    assert np.all(np.round(out[0], 4) == np.array([1, -0.7633, -0.9680, 1.0503, 0.7590, -1.0868]))
+    assert np.round(out[1], 4) == -0.0026
+    assert np.all(np.round(out[2], 4) == np.array([-0.8257, -0.6392, 0.1673, 0.3899, -1.0868]))

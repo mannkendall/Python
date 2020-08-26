@@ -13,6 +13,8 @@ This file contains useful tool for the package.
 import numpy as np
 from scipy import stats as spstats
 
+from statsmodels.tsa import stattools
+
 def dt_to_s(time_deltas):
     """ A convenience function that converts an array of datetime.timedeltas into an array of
     floats corresponding to the total_seconds() of each elements.
@@ -134,25 +136,42 @@ def nanautocorr(obs, nlags, r=0):
 
     """
 
-    # Saome sanity checks
+    # Some sanity checks
 
     # First, remove the mean of the data
-    obs -= np.nanmean(obs)
+    obs_corr = obs - np.nanmean(obs)
     out = []
 
     # Then, loop through the lags, and compute the perason r coefficient.
     for ind in range(1, nlags+1):
-        obs_1 = obs[ind:]
-        obs_2 = obs[:-ind]
+        obs_1 = obs_corr[ind:]
+        obs_2 = obs_corr[:-ind]
         msk = ~np.isnan(obs_1) * ~np.isnan(obs_2)
 
         out += [spstats.pearsonr(obs_1[msk], obs_2[msk])[0]]
 
     # For consistency with matlab, let's also include the full auto-correlation
-    msk = ~np.isnan(obs)
-    out = np.array([spstats.pearsonr(obs[msk], obs[msk])[0]] + out)
+    msk = ~np.isnan(obs_corr)
+    out = np.array([spstats.pearsonr(obs_corr[msk], obs_corr[msk])[0]] + out)
 
     # confidence bounds
     b = 1.96 * len(obs)**(-0.5) * np.nansum(out[:r+1]**2)**0.5
 
     return (out, b)
+
+def levinson(r, n):
+    """ Adapts the levinson() routine from matlab.
+
+    Basically re-arranges the outputs from statsmodels.tsa.stattools.levinson_durbin() to match
+    the matlab outputs. Includes a sign change and swapping a "1".
+
+    For more info, see `<https://ch.mathworks.com/help/signal/ref/levinson.html?s_tid=srchtitle>`__.
+
+    Todo:
+        * fix this docstring
+
+    """
+
+    out = stattools.levinson_durbin(r, nlags=n, isacov=True)
+
+    return (np.array([1] + list(-out[1])), out[0], -out[2][1:])
