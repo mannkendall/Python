@@ -11,7 +11,7 @@ This file contains useful tool for the package.
 
 # Import the required packages
 import numpy as np
-
+from scipy import stats as spstats
 
 def dt_to_s(time_deltas):
     """ A convenience function that converts an array of datetime.timedeltas into an array of
@@ -109,3 +109,50 @@ def kendall_var(data, t, n):
     var_s += np.nansum(t*(t-1)) * np.nansum(n*(n-1)) / (2*l_real*(l_real-1))
 
     return var_s
+
+def nanautocorr(obs, nlags, r=0):
+    """ Compute the Pearson R autocoreelation coefficient for an array that contains nans.
+
+    Also compute the confidence bounds b following Bartlett's formula.
+
+    Args:
+        obs (ndarray of float): the data array. Must be 1-D.
+        nlags (int): number of lags to compute.
+        r (int, optional): number of lags until the model is supposed to have a significant
+                           autocorrelation coefficient. Must be < nlags. Defaults to 0.
+
+    Returns:
+        (ndarray, float): the autocorrelation coefficients, and the confidence bounds b.
+
+    Note:
+        Adapted from Fabio (2020), Autocorrelation and Partial Autocorrelation with NaNs,
+        `<https://www.mathworks.com/matlabcentral/fileexchange/43840-autocorrelation-and-partial-autocorrelation-with-nans>`__,
+        MATLAB Central File Exchange. Retrieved August 26, 2020.
+
+    Todo:
+        * add reference to this docstrings.
+
+    """
+
+    # Saome sanity checks
+
+    # First, remove the mean of the data
+    obs -= np.nanmean(obs)
+    out = []
+
+    # Then, loop through the lags, and compute the perason r coefficient.
+    for ind in range(1, nlags+1):
+        obs_1 = obs[ind:]
+        obs_2 = obs[:-ind]
+        msk = ~np.isnan(obs_1) * ~np.isnan(obs_2)
+
+        out += [spstats.pearsonr(obs_1[msk], obs_2[msk])[0]]
+
+    # For consistency with matlab, let's also include the full auto-correlation
+    msk = ~np.isnan(obs)
+    out = np.array([spstats.pearsonr(obs[msk], obs[msk])[0]] + out)
+
+    # confidence bounds
+    b = 1.96 * len(obs)**(-0.5) * np.nansum(out[:r+1]**2)**0.5
+
+    return (out, b)

@@ -67,8 +67,23 @@ def test_kendall_var():
         - proper variance computation
     """
 
+    # Some fake data
     test_array_2 = np.array([1, 3, 5, 2, 8, 1, 5, 5, 6, 7, 1, np.nan, np.nan, 4])
     t = np.array([4, 2, 4, 2])
     n = np.array([7, 5])
 
     assert mkt.kendall_var(test_array_2, t, n) == 140 # normal case
+
+def test_nanautocorr():
+    """ Test the nanautocorr function.
+
+    This method specifically tests:
+        - proper correlation computation
+    """
+
+    # Some fake data
+    obs = np.array([1, 3, 5, 2, 8, 1, 5, 5, 6, 7, 1, np.nan, np.nan, 4])
+    out = mkt.nanautocorr(obs, 2, r=1)
+
+    assert np.all(np.round(out[0], 4) == np.array([1.0, -0.4418, 0.1836]))
+    assert np.all(np.round(out[1], 4) == 0.5727)
