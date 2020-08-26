@@ -18,25 +18,22 @@ from scipy.interpolate import interp1d
 # Import from this package
 from . import mk_tools as mkt
 
-def std_normal_var(s, var_obs):
+def std_normal_var(s, k_var):
     """ Compute the normalized standard variable Z.
 
     From Gilbert (1987).
 
     Args:
         s (int): S statistics.
-        var_obs (float): the variance.
+        k_var (float): the variance computed from Kendall_var().
 
     Returns:
-        float: the normalised variance.
-
-    Todo:
-        * include better reference in docstring
+        float: the normalized Z statistics.
 
     """
 
     # First some anity checks.
-    for item in [s, var_obs]:
+    for item in [s, k_var]:
         if not isinstance(item, (float, int)):
             raise Exception('Ouch ! Variables must be of type float, not: %s' % (type(item)))
 
@@ -45,7 +42,7 @@ def std_normal_var(s, var_obs):
         return 0.0
 
     # Deal with the other cases.
-    return (s + np.sign(s))/var_obs**0.5
+    return (s - np.sign(s))/k_var**0.5
 
 def sen_slope(obs_dts, obs, k_var, confidence=90.):
     """ Compute Sen's slope.
@@ -80,15 +77,14 @@ def sen_slope(obs_dts, obs, k_var, confidence=90.):
     if not isinstance(k_var, (int, float)):
         raise Exception('Ouch ! The variance must be of type float, not: %s' % (type(k_var)))
 
-    for item in [obs_dts, obs]:
-        if np.any(np.isnan(item)):
-            raise Exception('Ouch ! Something bad is going to happen because of unexpected nans!')
-
     l = len(obs)
 
     # Let's compute the slope for all the possible pairs.
     d = np.array([item for i in range(0, l-1)
                   for item in list((obs[i+1:l] - obs[i])/mkt.dt_to_s(obs_dts[i+1:l] - obs_dts[i]))])
+
+    # Let's only keep the values that are valid
+    d = d[~np.isnan(d)]
 
     # Let's compute the median slope
     slope = np.nanmedian(d)
@@ -102,12 +98,15 @@ def sen_slope(obs_dts, obs, k_var, confidence=90.):
     else:
         raise Exception("Ouch ! This error is impossible.")
 
-    m_1 = 0.5 * (len(d) - cconf)
-    m_2 = 0.5 * (len(d) + cconf)
+    # Note: because python starts at 0 and not 1, we need an additional "-1" to the following
+    # values of m_1 and m_2 to match the matlab implementation.
+    m_1 = 0.5 * (len(d) - cconf) - 1
+    m_2 = 0.5 * (len(d) + cconf) - 1
 
     # Let's setup a quick interpolation scheme to get the best possible confidence limits
     f = interp1d(np.arange(0, len(d), 1), np.sort(d), kind='linear', fill_value=(d[0], d[-1]),
                  assume_sorted=True, bounds_error=False)
+
     lcl = f(m_1)
     ucl = f(m_2)
 
@@ -121,7 +120,7 @@ def s_test(obs, obs_dts):
         obs_dts (ndarray of datetime.datetime): a list of observation datetimes.
 
     Returns:
-        (float, ndarra, ndarray): S, Sij, n
+        (float, ndarray): S, n
 
     Todo:
         * fix/improve this docstring
@@ -155,17 +154,13 @@ def s_test(obs, obs_dts):
     max_year = np.max(obs_years)
 
     # An array to keep track of the number of valid data points in each season
-    n = np.zeros(max_year - min_year + 1)
+    n = np.zeros(max_year - min_year + 1) * np.nan
     # Create a vector to keep track of the results
-    sij = np.zeros(max_year - min_year + 1)
+    sij = np.zeros(max_year - min_year + 1) * np.nan
 
     for (yr_ind, yr) in enumerate(range(min_year, max_year+1)):
-        # How many points were observed that year ?
-        ni = collections.Counter(obs_years)[yr]
-        # How many nan's present in that year ?
-        n_nan = np.count_nonzero(~np.isnan(obs[obs_years == yr]))
-        # Which implies the following number of valid points:
-        n[yr_ind] = ni - n_nan
+        #How valid points do I have :
+        n[yr_ind] = np.count_nonzero(~np.isnan(obs[obs_years == yr]))
 
         # Compute s for that year, by summing the signs for the differences with all the upcoming
         # years
@@ -173,4 +168,4 @@ def s_test(obs, obs_dts):
                                  for yr2 in range(yr+1, max_year+1)
                                  for item in obs[obs_years == yr2]])
 
-    return (np.nansum(sij), sij, n)
+    return (np.nansum(sij), n)
