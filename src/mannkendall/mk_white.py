@@ -22,11 +22,10 @@ def nanprewhite_arok(obs):
         obs (ndarray of floats): the data array. Must be 1-D.
 
     Return:
-        (float, float, int, ndarray, int): ak_lag, ak_std, k, data_prewhite, ak_ss
+        (float, float, ndarray, int): ak_lag, ak_std, data_prewhite, ak_ss
 
     Todo:
         * fix the docstring
-        * clean-up the fonction
 
     """
 
@@ -36,7 +35,8 @@ def nanprewhite_arok(obs):
 
     # If I just received nan's: life is easy
     if np.all(np.isnan(obs)):
-        return (np.nan, np.nan, np.nan, np.nan, np.nan, np.nan)
+        # TODO: should we return False instead ?
+        return (np.nan, np.nan, np.zeros(len(obs))*np.nan, np.nan)
 
     # Deal with infinites if there are any
     obs[np.isinf(obs)] = np.nan
@@ -74,8 +74,8 @@ def nanprewhite_arok(obs):
     #res = np.zeros((len(obs), k_max)) * np.nan # Not used
     y = np.zeros((len(obs), k_max)) * np.nan
 
-    aic2 = np.zeros(k_max) * np.nan
-    bic2 = np.zeros(k_max) * np.nan
+    #aic2 = np.zeros(k_max) * np.nan
+    #bic2 = np.zeros(k_max) * np.nan
     se = np.zeros(k_max) * np.nan
 
     for ind in range(k_max):
@@ -88,16 +88,14 @@ def nanprewhite_arok(obs):
             # followin WIlks p.362
             se[ind] = (1-x[ind+1]**2) * se[ind-1] * ind
 
-        aic2[ind] = n_valid * np.log(n_valid * se[ind]**2/(n_valid-ind)) + 2*(ind)
-        bic2[ind] = n_valid * np.log(n_valid * se[ind]**2/(n_valid-ind)) + (ind+2)*np.log(n_valid)
+        #aic2[ind] = n_valid * np.log(n_valid * se[ind]**2/(n_valid-ind)) + 2*(ind)
+        #bic2[ind] = n_valid * np.log(n_valid * se[ind]**2/(n_valid-ind)) + (ind+2)*np.log(n_valid)
         #res[ind:, ind] = obs[ind:] - y[ind:, ind] # Not used
 
-    # TODO: aic2 and bic2 are still wrong
-    # Need to debug this !!!
-
-
+    # Note: k is not actually needed, and therefore disabled here.
+    # Before any reactivation, aic2 and bic2 (above) should absolutely be thoroughly tested.
     # Autocorrelation degree
-    k = np.max([np.argmin(aic2), np.argmin(bic2)])
+    #k = np.max([np.argmin(aic2), np.argmin(bic2)])
 
     ak_lag = x[1]
     ak_std = ak_std[0]
@@ -113,4 +111,4 @@ def nanprewhite_arok(obs):
         data_prewhite = obs - y[:, 0]
         ak_ss = 95
 
-    return (ak_lag, ak_std, k, data_prewhite, ak_ss)
+    return (ak_lag, ak_std, data_prewhite, ak_ss)
