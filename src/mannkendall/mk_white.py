@@ -11,9 +11,11 @@ This file contains the different pre-whiteneing routines for the mannkendall pac
 
 # Import the required packages
 import warnings
+import copy
 import numpy as np
 
 from . import mk_tools as mkt
+from . import mk_stats as mks
 
 def nanprewhite_arok(obs):
     """ Compute the first lag autocorrelation coefficient to prewhite data as an AR(Kmax) function.
@@ -112,3 +114,154 @@ def nanprewhite_arok(obs):
         ak_ss = 95
 
     return (ak_lag, ak_std, data_prewhite, ak_ss)
+
+
+def prewhite(obs, obs_dts, resolution):
+    """ Compute the necessary prewhitened datasets to assess the statistical significance, and to
+    compute the slope.
+
+    Args:
+        obs (ndarray of floats): the data array. Must be 1-D.
+        obs_dts (ndarray of datetime.datetime): a list of observation datetimes.
+        resolution (float): delta value below which two measurements are considered equivalent.
+
+    Returns:
+        (dict, dict): data_pw, c
+
+    Todo:
+        * fix this docstring
+
+    """
+
+    # Create some storage dictionnaries
+    data_pw = {}
+    c_dict = {}
+
+    # Deal with infinites if there are any
+    obs[np.isinf(obs)] = np.nan
+
+    # Compute the autocorrelation
+    (c_dict['pw'], _, data_ar_removed, c_dict['ss']) = nanprewhite_arok(obs)
+
+    # Compute the obs PW corrected
+    if (np.count_nonzero(~np.isnan(data_ar_removed)) > 0) & (c_dict['ss'] == 95) & \
+       (c_dict['pw'] >= 0.05):
+
+        data_pw['pw'] = copy.copy(data_ar_removed)
+        data_pw['pw_cor'] = data_ar_removed/(1-c_dict['pw'])
+
+        # data VCTFPW corrected
+        # compute the trend slope of the PW data
+        t = mkt.nb_tie(data_pw['pw_cor'], resolution)
+        (_, n) = mks.s_test(data_pw['pw_cor'], obs_dts)
+        vari = mkt.kendall_var(obs, t, n)
+        (b0_pw, _, _) = mks.sen_slope(obs_dts, data_pw['pw_cor'], vari) # slope of the original data
+
+        t = mkt.nb_tie(obs, resolution)
+        (_, n) = mks.s_test(obs, obs_dts)
+        vari = mkt.kendall_var(obs, t, n)
+        (b0_or, _, _) = mks.sen_slope(obs_dts, obs, vari)
+
+        # Remove the trend
+        data_detrend_pw = obs - b0_pw * mkt.dt_to_s(obs_dts-obs_dts[0])
+        data_detrend_or = obs - b0_or * mkt.dt_to_s(obs_dts-obs_dts[0])
+
+        # Compute the autocorrelation of the detrended time series
+        (c_dict['vctfpw'], _, data_ar_removed_or, c_dict['ss_vc']) = \
+                                                                   nanprewhite_arok(data_detrend_or)
+        c_dict['tfpw_y'] = copy.copy(c_dict['vctfpw'])
+        (ak_pw, _, data_ar_removed_pw, ss_pw) = nanprewhite_arok(data_detrend_pw)
+
+        # Compute TFPW correction following Yue et al., 2002
+        # blended data
+        if np.count_nonzero(~np.isnan(data_ar_removed_or)) > 0:
+            data_pw['tfpw_y'] = data_ar_removed_or + b0_or * mkt.dt_to_s(obs_dts - obs_dts[0])
+        else:
+            data_pw['tfpw_y'] = copy.copy(obs)
+
+        # Compute the TFPW correction of Wang and Sail
+        if (np.abs(ak_pw) >= 0.05) & (ss_pw == 95):
+            # Change so that while can be used with the same variable:
+            # ak is new c and c1 is the last c
+            c_1 = copy.copy(c_dict['pw'])
+
+            data_ar_removed_pw = copy.copy(obs)
+            data_ar_removed_pw[1:] -= ak_pw * obs[:-1]
+            data_ar_removed_pw[1:] /= (1-ak_pw)
+
+            t = mkt.nb_tie(data_ar_removed_pw, resolution)
+            (_, n) = mks.s_test(data_ar_removed_pw, obs_dts)
+            vari = mkt.kendall_var(data_ar_removed_pw, t, n)
+            (b1_pw, _, _) = mks.sen_slope(obs_dts, data_ar_removed_pw, vari)
+
+            # Remove the trend
+            nb_loop = 0
+
+            # Remember that b0_pw and b1_pw are in 1/s.
+            while (np.abs(ak_pw-c_1) > 1e-4) & (np.abs(b1_pw-b0_pw) > (1e-4/24/3600)):
+
+                if (ak_pw >= 0.05) & (ss_pw == 95):
+                    nb_loop += 1
+
+                    data_detrend_pw = obs - b1_pw * mkt.dt_to_s(obs_dts-obs_dts[0])
+                    c_1 = copy.copy(ak_pw)
+                    b0_pw = copy.copy(b1_pw)
+                    (ak_pw, _, data_ar_removed2_pw, ss_pw) = nanprewhite_arok(data_detrend_pw)
+
+                    if (ak_pw > 0) & (ss_pw == 95):
+
+                        data_ar_removed2_pw = copy.copy(obs)
+                        data_ar_removed2_pw[1:] -= ak_pw * obs[:-1]
+                        data_ar_removed2_pw[1:] /= (1-ak_pw)
+
+                        t = mkt.nb_tie(data_ar_removed2_pw, resolution)
+                        (_, n) = mks.s_test(data_ar_removed2_pw, obs_dts)
+                        vari = mkt.kendall_var(data_ar_removed2_pw, t, n)
+                        (b1_pw, _, _) = mks.sen_slope(obs_dts, data_ar_removed2_pw, vari)
+                        data_ar_removed_pw = copy.copy(data_ar_removed2_pw)
+
+                        if nb_loop > 10:
+                            break
+                else:
+                    break
+        else:
+            b1_pw = copy.copy(b0_pw)
+            ak_pw = copy.copy(c_dict['pw'])
+
+        # blended data
+        if np.count_nonzero(~np.isnan(data_ar_removed_pw)) > 0:
+            data_pw['tfpw_ws'] = copy.copy(data_ar_removed_pw)
+            c_dict['tfpw_ws'] = copy.copy(ak_pw)
+        else:
+            data_pw['tfpw_ws'] = copy.copy(obs)
+            # Note:
+            # not setting c['tfpw_ws'] here will create a case-dependant mismatch in the output
+
+        # Correction VCTFPW
+        # Correction iof the variance
+        var_data = np.nanvar(obs)
+        var_data_tfpw = np.nanvar(data_ar_removed_or)
+        data_ar_removed_var = data_ar_removed_or * var_data/var_data_tfpw
+
+        # Modify the slope estimator
+        # (correction of the slope for the autocorrelation)
+        if c_dict['vctfpw'] >= 0:
+            b_vc = b0_or / np.sqrt((1+c_dict['vctfpw'])/(1-c_dict['vctfpw']))
+        else:
+            b_vc = copy.copy(b0_or)
+
+        # Add the trend again
+        data_pw['vctfpw'] = data_ar_removed_var + b_vc * mkt.dt_to_s(obs_dts-obs_dts[0])
+
+    else: # no statistically significant correlation
+
+        data_pw['pw'] = copy.copy(obs)
+        data_pw['pw_cor'] = copy.copy(obs)
+        data_pw['tfpw_y'] = copy.copy(obs)
+        data_pw['tfpw_ws'] = copy.copy(obs)
+        data_pw['vctfpw'] = copy.copy(obs)
+        c_dict['vctfpw'] = np.nan
+        c_dict['ss_vc'] = np.nan
+        c_dict['tfpw_ws'] = np.nan
+
+    return (data_pw, c_dict)

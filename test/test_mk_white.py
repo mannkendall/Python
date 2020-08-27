@@ -11,6 +11,7 @@ This file contains test functions for the mk_white module.
 
 # Import from python packages
 from pathlib import Path
+from datetime import datetime
 import numpy as np
 
 # Import from current package
@@ -19,9 +20,13 @@ from mannkendall import mk_white as mkw
 
 # Load some local test_data
 TEST_DATA_FN = Path(__file__).parent / 'test_data' / 'test_data_C.csv'
+#TEST_DATA_FN = Path(__file__).parent / 'test_data' / 'BNB_data.csv'
+#TEST_DATA_FN = Path(__file__).parent / 'test_data' / 'HPB_data.csv'
 TEST_DATA = np.genfromtxt(TEST_DATA_FN, skip_header=1, delimiter=';',
                           missing_values='NaN', filling_values=np.nan)
-
+# Make sure the datetime are properly set
+TEST_OBS_DTS = np.array([datetime(int(row[0]), int(row[1]), int(row[2]),
+                                  int(row[3]), int(row[4]), int(row[5])) for row in TEST_DATA])
 #
 def test_nanprewhite_arok():
     """ Test the std_normal_var() function.
@@ -54,3 +59,24 @@ def test_nanprewhite_arok():
                 assert np.round(item, 4) == test_out[2][ind]
 
         assert out[3] == test_out[3]
+
+
+def test_prewhite():
+    """ test the prewhite() function.
+
+    This method specifcally tests:
+        - proper computation by the routine.
+
+    """
+
+    out = mkw.prewhite(TEST_DATA[:, 6], TEST_OBS_DTS, 2)
+    #print('pw:')
+
+    for (ind, item) in enumerate(['pw', 'pw_cor', 'tfpw_y', 'tfpw_ws', 'vctfpw']):
+    #for (ind, item) in enumerate(['pw', 'tfpw_y', 'tfpw_ws', 'vctfpw']):
+        for j in range(len(out[0][item])):
+            if np.isnan(out[0][item][j]):
+                assert np.isnan(TEST_DATA[j, 7+ind])
+            else:
+                # TODO: could this be more accurate ?
+                assert np.abs(out[0][item][j] - TEST_DATA[j, 7+ind]) < 2e-3
