@@ -57,4 +57,5 @@ def test_sen_slope():
 
     out = mks.sen_slope(TEST_OBS_DTS, TEST_DATA[:, 6], 118.9091, confidence=90)
     # Check the outcome., remembering that the python routine *always* returns the slope in 1/s !
+    # TODO: make this test with bigger precision, to check that the lcl and ucl are correct.
     assert np.all(np.round(np.array(out) * 24 * 3600, 4) == np.array([0.0328, 0.0246, 0.0354]))

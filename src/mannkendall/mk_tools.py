@@ -15,6 +15,28 @@ from scipy import stats as spstats
 
 from statsmodels.tsa import stattools
 
+def de_sort(vals, inds):
+    """ De-sort an array of values vals that were sorted according to the indices inds.
+
+    Args:
+        vals (ndarray): a 1-D array to de-sort.
+        inds (ndarray of int): the sorting indices.
+
+    Returns:
+        ndarray: the de-sorted array.
+
+    """
+
+    # Create the de-sorted structure
+    out = np.zeros_like(vals)
+
+    # Loop through every item.
+    for (sorted_ind, unsorted_ind) in enumerate(inds):
+        out[unsorted_ind] = vals[sorted_ind]
+
+    return out
+
+
 def dt_to_s(time_deltas):
     """ A convenience function that converts an array of datetime.timedeltas into an array of
     floats corresponding to the total_seconds() of each elements.

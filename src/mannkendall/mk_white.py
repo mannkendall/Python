@@ -64,6 +64,8 @@ def nanprewhite_arok(obs):
 
     # Compute the confidence limits for the autocorrelation
     (_, _, ak_coefs) = mkt.levinson(x / n_valid, p_ind)
+    # TODO: mkt.levinson() include a -1 to match the matlab output ... I should probably get rid of
+    # it in there, rather than here.
     ak_coefs *= -1
     # TODO: the following sqrt complains when the inside gets negative.
     # Should that really happen ?
@@ -84,7 +86,7 @@ def nanprewhite_arok(obs):
         if ind == 0:
             y[1:, 0] = x[1] * obs[:-1]
             # following Wilks p.362
-            se[0] = (1-x[1]**2) * np.nanvar(obs)
+            se[0] = (1-x[1]**2) * np.nanvar(obs, ddof=1) # ddof=1 to be like nanvar from matlab)
         else:
             y[ind+1:, ind] = y[ind+1:, ind-1] + x[ind+1] * obs[:-ind-1]
             # followin WIlks p.362
@@ -238,9 +240,9 @@ def prewhite(obs, obs_dts, resolution):
             # not setting c['tfpw_ws'] here will create a case-dependant mismatch in the output
 
         # Correction VCTFPW
-        # Correction iof the variance
-        var_data = np.nanvar(obs)
-        var_data_tfpw = np.nanvar(data_ar_removed_or)
+        # Correction of the variance
+        var_data = np.nanvar(obs, ddof=1) # ddof=1 to be like nanvar from matlab
+        var_data_tfpw = np.nanvar(data_ar_removed_or, ddof=1) # ddof=1 to be like nanvar from matlab
         data_ar_removed_var = data_ar_removed_or * var_data/var_data_tfpw
 
         # Modify the slope estimator

@@ -23,6 +23,19 @@ TEST_DATA_FN = Path(__file__).parent / 'test_data' / 'test_data_C.csv'
 TEST_DATA = np.genfromtxt(TEST_DATA_FN, skip_header=1, delimiter=';',
                           missing_values='NaN', filling_values=np.nan)
 
+
+def test_de_sort():
+    """ Test the de_sort() utility function.
+
+    This method specifically tests:
+        - correct indices swapping.
+    """
+
+    a = np.random.rand(50)
+    sort_inds = a.argsort()
+
+    assert np.all(a == mkt.de_sort(a[sort_inds], sort_inds))
+
 def test_dt_to_s():
     """ Test the dt_to_s utility function.
 

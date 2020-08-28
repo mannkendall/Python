@@ -19,15 +19,25 @@ from mannkendall import mk_white as mkw
 
 
 # Load some local test_data
-TEST_DATA_FN = Path(__file__).parent / 'test_data' / 'test_data_C.csv'
-#TEST_DATA_FN = Path(__file__).parent / 'test_data' / 'BNB_data.csv'
-#TEST_DATA_FN = Path(__file__).parent / 'test_data' / 'HPB_data.csv'
-TEST_DATA = np.genfromtxt(TEST_DATA_FN, skip_header=1, delimiter=';',
+TEST_C_FN = Path(__file__).parent / 'test_data' / 'test_data_C.csv'
+TEST_BNB_FN = Path(__file__).parent / 'test_data' / 'BNB_data.csv'
+TEST_HPB_FN = Path(__file__).parent / 'test_data' / 'HPB_data.csv'
+
+C_DATA = np.genfromtxt(TEST_C_FN, skip_header=1, delimiter=';',
                           missing_values='NaN', filling_values=np.nan)
+BNB_DATA = np.genfromtxt(TEST_BNB_FN, skip_header=1, delimiter=';',
+                          missing_values='NaN', filling_values=np.nan)
+HPB_DATA = np.genfromtxt(TEST_HPB_FN, skip_header=1, delimiter=';',
+                          missing_values='NaN', filling_values=np.nan)
+
 # Make sure the datetime are properly set
-TEST_OBS_DTS = np.array([datetime(int(row[0]), int(row[1]), int(row[2]),
-                                  int(row[3]), int(row[4]), int(row[5])) for row in TEST_DATA])
-#
+C_DTS = np.array([datetime(int(row[0]), int(row[1]), int(row[2]),
+                                  int(row[3]), int(row[4]), int(row[5])) for row in C_DATA])
+BNB_DTS = np.array([datetime(int(row[0]), int(row[1]), int(row[2]),
+                                  int(row[3]), int(row[4]), int(row[5])) for row in BNB_DATA])
+HPB_DTS = np.array([datetime(int(row[0]), int(row[1]), int(row[2]),
+                                  int(row[3]), int(row[4]), int(row[5])) for row in HPB_DATA])
+
 def test_nanprewhite_arok():
     """ Test the std_normal_var() function.
 
@@ -39,7 +49,7 @@ def test_nanprewhite_arok():
     test1 = np.array([1, 3, 5, 2, 8, 1, 5, 5, 6, 7, 1, np.nan, np.nan, 4])
     out1 = [-0.4418, 0.2590, test1, 0]
 
-    test2 = TEST_DATA[:, 6]
+    test2 = C_DATA[:, 6]
     out2 = [0.8257, 0.1701, np.array([np.nan, 2.3486, 4.1972, np.nan, np.nan, 9.1559,
                                       -2.5368, 7.5045, 4.4632, 5.7246, 6.1604, -0.4039]), 95]
 
@@ -69,14 +79,17 @@ def test_prewhite():
 
     """
 
-    out = mkw.prewhite(TEST_DATA[:, 6], TEST_OBS_DTS, 2)
-    #print('pw:')
+    # Test both the BNB and HBP datasets.
+    for (OBS_DTS, OBS) in [[BNB_DTS, BNB_DATA],
+                           [HPB_DTS, HPB_DATA]]:
 
-    for (ind, item) in enumerate(['pw', 'pw_cor', 'tfpw_y', 'tfpw_ws', 'vctfpw']):
-    #for (ind, item) in enumerate(['pw', 'tfpw_y', 'tfpw_ws', 'vctfpw']):
-        for j in range(len(out[0][item])):
-            if np.isnan(out[0][item][j]):
-                assert np.isnan(TEST_DATA[j, 7+ind])
-            else:
-                # TODO: could this be more accurate ?
-                assert np.abs(out[0][item][j] - TEST_DATA[j, 7+ind]) < 2e-3
+        # Run the function
+        out = mkw.prewhite(OBS[:, 6], OBS_DTS, 2)
+
+        # Check the output
+        for (ind, item) in enumerate(['pw', 'tfpw_y', 'tfpw_ws', 'vctfpw']):
+            for j in range(len(out[0][item])):
+                if np.isnan(out[0][item][j]):
+                    assert np.isnan(OBS[j, 7+ind])
+                else:
+                    assert np.abs(out[0][item][j] - OBS[j, 7+ind]) < 1e-7
