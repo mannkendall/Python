@@ -5,10 +5,8 @@ Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.
 Distributed under the terms of the BSD 3-Clause License.
 
 SPDX-License-Identifier: BSD-3-Clause
+
+This file contains the hardcoded parameters for the mannkendall package.
 """
-
-# Get the version of the code to behave as usual
-from .mk_version import VERSION as __version__
-
-# To simplify the call of the highest level functions
-from .mk_main import *
+#: list: supported pre-whitening methods "tags"
+VALID_PW_METHODS = ['pw', 'tfpw_y', 'tfpw_ws', 'vctfpw', '3pw']

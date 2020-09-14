@@ -11,11 +11,30 @@ This file contains test functions for the mk_tools module.
 
 # Import from python packages
 from datetime import datetime
+from pathlib import Path
 import numpy as np
 import pytest
 
 # Import from current package
 from mannkendall import mk_tools as mkt
+
+# Load some local test_data
+TEST_DATA_FN = Path(__file__).parent / 'test_data' / 'test_data_C.csv'
+TEST_DATA = np.genfromtxt(TEST_DATA_FN, skip_header=1, delimiter=';',
+                          missing_values='NaN', filling_values=np.nan)
+
+
+def test_de_sort():
+    """ Test the de_sort() utility function.
+
+    This method specifically tests:
+        - correct indices swapping.
+    """
+
+    a = np.random.rand(50)
+    sort_inds = a.argsort()
+
+    assert np.all(a == mkt.de_sort(a[sort_inds], sort_inds))
 
 def test_dt_to_s():
     """ Test the dt_to_s utility function.
@@ -67,8 +86,50 @@ def test_kendall_var():
         - proper variance computation
     """
 
+    # Some fake data
     test_array_2 = np.array([1, 3, 5, 2, 8, 1, 5, 5, 6, 7, 1, np.nan, np.nan, 4])
     t = np.array([4, 2, 4, 2])
     n = np.array([7, 5])
 
     assert mkt.kendall_var(test_array_2, t, n) == 140 # normal case
+
+def test_nanautocorr():
+    """ Test the nanautocorr function.
+
+    This method specifically tests:
+        - proper correlation computation
+    """
+
+    # Some fake data
+    obs = np.array([1, 3, 5, 2, 8, 1, 5, 5, 6, 7, 1, np.nan, np.nan, 4])
+    out = mkt.nanautocorr(obs, 2, r=1)
+
+    assert np.all(np.round(out[0], 4) == np.array([1.0, -0.4418, 0.1836]))
+    assert np.all(np.round(out[1], 4) == 0.5727)
+
+    obs = TEST_DATA[:, 6]
+    out = mkt.nanautocorr(obs, 6, r=5)
+
+    assert np.all(np.round(out[0], 4) ==
+                  np.array([1, 0.8257, 0.8852, 0.7600, 0.7081, 0.8066, 0.5964]))
+    assert np.all(np.round(out[1], 4) == 1.1589)
+
+def test_levinson():
+    """ Test the levinson function.
+
+    This method specifically tests:
+        - method returns are similar to the matlab implementation.
+    """
+
+    # Compute the autocorrelation
+    (x, _) = mkt.nanautocorr(TEST_DATA[:, 6], 6, r=5)
+
+    # Compute the confidence limits for the autocorrelation
+    x_1 = x / np.count_nonzero(~np.isnan(TEST_DATA[:, 6]))
+    n = 5
+
+    out = mkt.levinson(x_1, n)
+
+    assert np.all(np.round(out[0], 4) == np.array([1, -0.7633, -0.9680, 1.0503, 0.7590, -1.0868]))
+    assert np.round(out[1], 4) == -0.0026
+    assert np.all(np.round(out[2], 4) == np.array([-0.8257, -0.6392, 0.1673, 0.3899, -1.0868]))
