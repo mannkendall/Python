@@ -27,7 +27,7 @@ with version_file.open() as fid:
 
 # -- Project information -----------------------------------------------------
 
-project = 'mannkendall'
+project = 'mannkendall (Python)'
 copyright = '2020, MeteoSwiss.'
 author = 'M. Collaud Coen, F.P.A. Vogt.'
 version = vers

@@ -1,6 +1,6 @@
-.. _running:
+.. include:: ./substitutions.rst
 
-Running mannkendall
-===================
+Running |name|
+==============
 
-This page is very much a WIP. Feel free to add/restructure this as you see fit.
+This page is very much a WIP.

@@ -1,12 +1,14 @@
 
-.. |last-commit| image:: https://img.shields.io/github/last-commit/MeteoSwiss-MDA/mannkendall.svg?colorB=e6c000
-   :target: https://github.com/MeteoSwiss-MDA/mannkendall
+.. |name| replace:: mannkendall (Python)
 
-.. |issues| image:: https://img.shields.io/github/issues/MeteoSwiss-MDA/mannkendall.svg?colorB=b4001e
-   :target: https://github.com/MeteoSwiss-MDA/mannkendall/issues
+.. |last-commit| image:: https://img.shields.io/github/last-commit/mannkendall/Python.svg?colorB=e6c000
+   :target: https://github.com/mannkendall/Python
 
-.. |stars| image:: https://img.shields.io/github/stars/MeteoSwiss-MDA/mannkendall.svg?style=social&label=Stars
-   :target: https://github.com/MeteoSwiss-MDA/mannkendall
+.. |issues| image:: https://img.shields.io/github/issues/mannkendall/Python.svg?colorB=b4001e
+   :target: https://github.com/annkendall/Python/issues
 
-.. |watch| image:: https://img.shields.io/github/watchers/MeteoSwiss-MDA/mannkendall.svg?style=social&label=Watch
-   :target: https://github.com/MeteoSwiss-MDA/mannkendall
+.. |stars| image:: https://img.shields.io/github/stars/mannkendall/Python.svg?style=social&label=Stars
+   :target: https://github.com/mannkendall/Python
+
+.. |watch| image:: https://img.shields.io/github/watchers/mannkendall/Python.svg?style=social&label=Watch
+   :target: https://github.com/mannkendall/Python
