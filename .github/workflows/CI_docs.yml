@@ -27,6 +27,8 @@ jobs:
       - name: Install dependancies
         run: |
           python -m pip install --upgrade pip
+          pip install sphinx
+          pip install sphinx-rtd-theme
         shell: bash
 
       # Here, let's install our module to make sure all the dependencies specified in setup.py are
