@@ -1,9 +1,9 @@
 # Contributing to mannkendall (Python)
 
-If you want to report a bug with mannkendall, [jump here](#reporting-a-bug).
+If you want to report a bug with mannkendall (Python), [jump here](#reporting-a-bug).
 
 Or perhaps you may actually be considering contributing to the development of
-mannkendall ? :heart_eyes: :tada:
+mannkendall (Python) ? :heart_eyes: :tada:
 
 There are many ways that you can do so, including by:
 - [reporting a bug](#reporting-a-bug)
