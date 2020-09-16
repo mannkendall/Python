@@ -24,7 +24,7 @@ contribution. Plus, :anger: typos :anger: are the worst !
 
 - [Code of conduct](#code-of-conduct)
 - [Reporting a bug](#reporting-a-bug)
-- [Essential things to know about mannkendall (Python)](#essential-things-to-know-about-mannkendall-(python))
+- [Essential things to know about mannkendall (Python)](#essential-things-to-know-about-mannkendall-python)
 - [Styles](#styles)
 - [Step-by-step guide to contributing](#step-by-step-guide-to-contributing)
 
