@@ -15,18 +15,25 @@ This file contains the different pre-whiteneing routines for the mannkendall pac
 import warnings
 import copy
 import numpy as np
+from scipy.stats import norm
 
 from . import mk_tools as mkt
 from . import mk_stats as mks
 
-def nanprewhite_arok(obs):
+def nanprewhite_arok(obs, alpha_ak=95):
     """ Compute the first lag autocorrelation coefficient to prewhite data as an AR(Kmax) function.
 
     Args:
         obs (ndarray of floats): the data array. Must be 1-D.
+        alpha_ak (float): confidence level for the first lag autocorrelation in %. Defaults to 95.
 
     Return:
-        (float, float, ndarray, int): ak_lag, ak_std, data_prewhite, ak_ss
+        (float, ndarray, int): ak_lag, data_prewhite, ak_ss.
+                               ak_lag (float): first lag autocorrelation coefficient.
+                               data_prewhite (ndarray): data after removing of the first lag
+                               autorcorrelation if ak_lag is ss, original data otherwise.
+                               ak_ss (int): statistical significance of the first lag
+                               autocorrelation. alpha_ak is ss at the alpha_ak level, zero otherwise
 
     Todo:
         * fix the docstring
@@ -36,11 +43,15 @@ def nanprewhite_arok(obs):
     # Check the input. I shall be unforgiving.
     if not isinstance(obs, np.ndarray):
         raise Exception('Ouch ! data type should be numpy.ndarray, not: %s' % (type(obs)))
+    if not isinstance(alpha_ak, float):
+        raise Exception('Ouch ! alpha_ak should be of type float, not: %s' % (type(alpha_ak)))
+    if alpha_ak > 100 or alpha_ak < 0:
+        raise Exception('Ouch ! I need 0 <= alpha+ak <= 100, not: %.2f' % (alpha_ak))
 
     # If I just received nan's: life is easy
     if np.all(np.isnan(obs)):
         # TODO: should we return False instead ?
-        return (np.nan, np.nan, np.zeros(len(obs))*np.nan, np.nan)
+        return (np.nan, np.zeros(len(obs))*np.nan, np.nan)
 
     # Deal with infinites if there are any
     obs[np.isinf(obs)] = np.nan
@@ -69,11 +80,12 @@ def nanprewhite_arok(obs):
     # TODO: mkt.levinson() include a -1 to match the matlab output ... I should probably get rid of
     # it in there, rather than here.
     ak_coefs *= -1
-    # TODO: the following sqrt complains when the inside gets negative.
+    # OLD-TODO: the following sqrt complains when the inside gets negative.
     # Should that really happen ?
-    ak_std = np.sqrt((1-ak_coefs**2)/n_valid)
-    uconf = 1.96/np.sqrt(n_valid)
+    # ak_std = np.sqrt((1-ak_coefs**2)/n_valid)
+    uconf = norm.ppf(1-(1-alpha_ak/100)/2)/np.sqrt(n_valid)
 
+    """
     k_max = np.min([5, nlag])
 
     # Test the residue of the AR(Kmax)
@@ -102,40 +114,59 @@ def nanprewhite_arok(obs):
     # Before any reactivation, aic2 and bic2 (above) should absolutely be thoroughly tested.
     # Autocorrelation degree
     #k = np.max([np.argmin(aic2), np.argmin(bic2)])
+    """
 
     ak_lag = x[1]
-    ak_std = ak_std[0]
+    # ak_std = ak_std[0]
 
     # Take only the correlation statistically significant at 95% confidence limit for the data
     if np.abs(ak_coefs[0]) < uconf:
         data_prewhite = obs
         ak_ss = 0
-        # TODO: are we sure we want a formal warning here ? This is quite aggressive.
+        # Note: are we sure we want a formal warning here ? This is quite aggressive.
         # But I suppose it's an important thing to know ?
         warnings.warn('No statistically significant autocorrelation.')
     else:
+        y = np.zeros(len(obs)) * np.nan
+        y[1:] = x[1] * obs[:-1]
         data_prewhite = obs - y[:, 0]
-        ak_ss = 95
+        ak_ss = alpha_ak
 
-    return (ak_lag, ak_std, data_prewhite, ak_ss)
+    return (ak_lag, data_prewhite, ak_ss)
 
 
-def prewhite(obs, obs_dts, resolution):
+def prewhite(obs, obs_dts, resolution, alpha_ak=95):
     """ Compute the necessary prewhitened datasets to assess the statistical significance, and to
-    compute the slope.
+    compute the Sen slope for each of the prewhitening method, including 3PW.
 
     Args:
         obs (ndarray of floats): the data array. Must be 1-D.
         obs_dts (ndarray of datetime.datetime): a list of observation datetimes.
         resolution (float): delta value below which two measurements are considered equivalent.
+                            It is used to compute the number of ties.
+        alpha_ak (float, optional): statistical significance in % for the first lag autocorrelation.
+                                    Defaults to 95.
 
     Returns:
-        (dict, dict): data_pw, c
+        (dict): data_pw, that contains 5 PW timeseries:
+                * 'pw': PW with the first lag autocorrelation of the data
+                * 'pw_cor': PW corrected with 1/(1-ak1)
+                * 'tfpw_ws': PW with the first lag autocorrelation of the data after detrending
+                             computed from PW data (see Wang & Swail)
+                * 'tfpw_y': method of Yue et al 2002, not 1/1-ak1) correction, detrend on original
+                            data
+                * 'vctfpw': PW with the first lag autocorrelation of the data after detrending +
+                            correction of the PW data for the variance (see Wang 2015)
 
     Todo:
         * fix this docstring
 
     """
+
+    # Some sanity checks to start with
+    if alpha_ak > 100 or alpha_ak < 0:
+        raise Exception('Ouch ! Confidence limits should be 0 < alpha_ak < 100, not: %.2f' %
+                        (alpha_ak))
 
     # Create some storage dictionnaries
     data_pw = {}
@@ -145,10 +176,10 @@ def prewhite(obs, obs_dts, resolution):
     obs[np.isinf(obs)] = np.nan
 
     # Compute the autocorrelation
-    (c_dict['pw'], _, data_ar_removed, c_dict['ss']) = nanprewhite_arok(obs)
+    (c_dict['pw'], data_ar_removed, c_dict['ss']) = nanprewhite_arok(obs, alpha_ak=alpha_ak)
 
     # Compute the obs PW corrected
-    if (np.count_nonzero(~np.isnan(data_ar_removed)) > 0) & (c_dict['ss'] == 95) & \
+    if (np.count_nonzero(~np.isnan(data_ar_removed)) > 0) & (c_dict['ss'] == alpha_ak) & \
        (c_dict['pw'] >= 0.05):
 
         data_pw['pw'] = copy.copy(data_ar_removed)
@@ -171,10 +202,10 @@ def prewhite(obs, obs_dts, resolution):
         data_detrend_or = obs - b0_or * mkt.dt_to_s(obs_dts-obs_dts[0])
 
         # Compute the autocorrelation of the detrended time series
-        (c_dict['vctfpw'], _, data_ar_removed_or, c_dict['ss_vc']) = \
-                                                                   nanprewhite_arok(data_detrend_or)
+        (c_dict['vctfpw'], data_ar_removed_or, c_dict['ss_vc']) = \
+                                        nanprewhite_arok(data_detrend_or, alpha_ak=alpha_ak)
         c_dict['tfpw_y'] = copy.copy(c_dict['vctfpw'])
-        (ak_pw, _, data_ar_removed_pw, ss_pw) = nanprewhite_arok(data_detrend_pw)
+        (ak_pw, data_ar_removed_pw, ss_pw) = nanprewhite_arok(data_detrend_pw, alpha_ak=alpha_ak)
 
         # Compute TFPW correction following Yue et al., 2002
         # blended data
@@ -210,7 +241,8 @@ def prewhite(obs, obs_dts, resolution):
                     data_detrend_pw = obs - b1_pw * mkt.dt_to_s(obs_dts-obs_dts[0])
                     c_1 = copy.copy(ak_pw)
                     b0_pw = copy.copy(b1_pw)
-                    (ak_pw, _, data_ar_removed2_pw, ss_pw) = nanprewhite_arok(data_detrend_pw)
+                    (ak_pw, data_ar_removed2_pw, ss_pw) = \
+                                            nanprewhite_arok(data_detrend_pw, alpha_ak=alpha_ak)
 
                     if (ak_pw > 0) & (ss_pw == 95):
 
@@ -264,8 +296,5 @@ def prewhite(obs, obs_dts, resolution):
         data_pw['tfpw_y'] = copy.copy(obs)
         data_pw['tfpw_ws'] = copy.copy(obs)
         data_pw['vctfpw'] = copy.copy(obs)
-        c_dict['vctfpw'] = np.nan
-        c_dict['ss_vc'] = np.nan
-        c_dict['tfpw_ws'] = np.nan
 
-    return (data_pw, c_dict)
+    return data_pw
