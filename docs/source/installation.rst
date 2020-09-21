@@ -7,42 +7,41 @@ Installation
 
     Include a link to the pypi page in the very next sentence.
 
-mannkendall will be available on pypi, which should make its installation straighforward.
+|name| will be available on pypi, which should make its installation straighforward.
 In a terminal, type:
 
 .. code-block:: python
 
    pip install mannkendall
 
-And that will take care of things. mannkendall uses `semantic versioning <https://semver.org/>`_.
+And that will take care of things. |name| uses `semantic versioning <https://semver.org/>`_.
 The latest stable version is |version|.
 
-The most recent release of mannkendall is also available for download from its
-`Github repository <https://github.com/MeteoSwiss-MDA/mannkendall/releases/latest/>`_.
-
-.. Caution::
-    The mannkendall Github repository will remain private until the code is being released.
-    If you want to know more about the current status of the code, feel free to
-    `get in touch <frederic.vogt@meteoswiss.ch>`_.
+The most recent release of |name| is also available for download from its
+`Github repository <https://github.com/mannkendall/Python/releases/latest/>`_.
 
 Requirements
 ------------
-mannkendall is compatible with the following python versions:
+|name| is compatible with the following python versions:
 
 .. literalinclude:: ../../setup.py
     :language: python
     :lines: 39
 
-Furthermore, mannkendall relies on a few external modules, which will be automatically installed by
-``pip`` if required:
+Furthermore, |name| relies on a the following external modules, which will be automatically
+installed by ``pip`` if required:
 
 .. literalinclude:: ../../setup.py
     :language: python
-    :lines: 40-41
+    :lines: 40-43
 
 Testing the installation
 ------------------------
 
-.. todo::
+The most basic check to see if the installation was successful consists in checking the version of
+the package:
 
-    Describe how to test that mannkendall was properly installed.
+.. code-block:: python
+
+    import mannkendall
+    mannkendall.__version__

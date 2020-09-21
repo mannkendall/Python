@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020 MeteoSwiss, contributors of the original matlab version of the code listed in
+ORIGINAL_AUTHORS.
+Copyright (c) 2020 MeteoSwiss, contributors of the Python version of the code listed in AUTHORS.
 
 Distributed under the terms of the BSD 3-Clause License.
 
@@ -44,8 +46,7 @@ def compute_mk_stat(obs_dts, obs, resolution):
     if len(obs) > 10:
         result['p'] = 2 * (1 - spstats.norm.cdf(np.abs(z), loc=0, scale=1))
     else:
-        # TODO: do we really need this external file ?
-        prob_mk_n = np.genfromtext(Path(__file__).parent / 'Prob_MK_n.csv')
+        prob_mk_n = mkh.PROB_MK_N
         result['p'] = prob_mk_n[np.abs(s), len(obs)]
 
     # Determine the statistic significance
