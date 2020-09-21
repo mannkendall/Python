@@ -23,18 +23,68 @@ from . import mk_stats as mks
 from . import mk_white as mkw
 
 
-def compute_mk_stat(obs_dts, obs, resolution):
+def prob_3pw(p_pw, p_tfpw_y, alpha_mk):
+    """ Estimate the probability of the MK test and its statistical significance.
+
+    1) Estimates the probability of the MK test with the 3PW method. To have the maximal certainty,
+    P is taken as the maximum of P_PW and P_TFPW_Y.
+
+    2) Estimates the statistical significance of the MK test as a function of the given confidence
+    level alpha_MK
+
+    Args:
+        p_pw (float): probability computed from the PW prewhitened dataset
+        p_tfpw_y (float): probability computed from the TFPW_Y prewhitened dataset
+        alpha_mk (float): confidence level in % for the MK test.
+
+    Returns:
+        (float, int): P, ss
+
+    Todo:
+        * improve this docstring
+
+    """
+
+    # Some sanity checks to begin with
+    for item in [p_pw, p_tfpw_y, alpha_mk]:
+        if not isinstance(item, float):
+            raise Exception('Ouch ! I was expecting a float, not: %s' % (type(item)))
+
+    p_alpha = 1 - alpha_mk/100
+    # Compute the probability
+    p = np.nanmax(p_pw, p_tfpw_y)
+
+    # Determine the statistical significance
+    if (p_pw <= p_alpha) & (p_tfpw_y <= p_alpha):
+        ss = alpha_mk
+    elif (p_pw > p_alpha) & (p_tfpw_y <= p_alpha): # false positive for TFPW_Y @ alpha %
+        ss = -1
+    elif (p_tfpw_y > p_alpha) & (p_pw <= p_alpha): # false positive for TFPW_Y
+        ss = -2
+    elif (p_tfpw_y > p_alpha) & (p_pw > p_alpha): # false positive for PW
+        ss = 0
+
+    return (p, ss)
+
+
+def compute_mk_stat(obs_dts, obs, resolution, alpha_mk=95, alpha_cl=90):
     """ Compute all the components for the MK statistics.
 
     Args:
         obs_dts (ndarray of datetime.datetime): a list of observation datetimes.
         obs (ndarray of floats): the data array. Must be 1-D.
         resolution (float): delta value below which two measurements are considered equivalent.
+        alpha_mk (float, optional): confidence level for the Mann-Kendall test in %. Defaults to 95.
+        alpha_cl (float, optional): confidence level for the Sen's slope in %. Defaults to 90.
 
     Returns:
         (dict, int, float, float): result, s, vari, z
 
     """
+
+    # Some sanity checks
+    if alpha_mk < 0 or alpha_mk >100 or alpha_cl < 0 or alpha_cl>100:
+        raise Exception("Ouch ! Confidence limits must be 0 <= CL <= 100.")
 
     result = {}
 
@@ -47,26 +97,20 @@ def compute_mk_stat(obs_dts, obs, resolution):
         result['p'] = 2 * (1 - spstats.norm.cdf(np.abs(z), loc=0, scale=1))
     else:
         prob_mk_n = mkh.PROB_MK_N
-        result['p'] = prob_mk_n[np.abs(s), len(obs)]
+        result['p'] = prob_mk_n[np.abs(s), len(obs)] # TODO: np.abs(s) + 1 ?
 
     # Determine the statistic significance
-    if result['p'] <= 0.05:
-        result['ss'] = 95
-    elif 0.1 >= result['p'] > 0.05:
-        result['ss'] = 90
+    if result['p'] <= 1- alpha_mk/100:
+        result['ss'] = alpha_mk
     else:
         result['ss'] = 0
 
     (slope, slope_min, slope_max) = mks.sen_slope(obs_dts, obs, vari)
     result['ak'] = np.nan
-    result['slope'] = slope * 3600 * 24 * 365.25  # Transform the slop in 1/yr. TODO: use precise year length ?
+    # Transform the slop in 1/yr. TODO: use precise year length ?
+    result['slope'] = slope * 3600 * 24 * 365.25
     result['ucl'] = slope_max * 3600 * 24 *365.25 # idem
     result['lcl'] = slope_min * 3600 * 24 * 365.25 # idem
-    result['median'] = np.nanmedian(obs)
-    result['slope_p'] = result['slope'] * 100/np.abs(result['median'])
-    result['ucl_p'] = slope_max *3600 *24 *365.25 * 100/np.abs(result['median'])
-    result['lcl_p'] = slope_min *3600 *24 *365.25 * 100/np.abs(result['median'])
-    result['xhomo'] = np.nan
 
     return (result, s, vari, z)
 
