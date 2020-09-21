@@ -15,6 +15,7 @@ This file contains the core statistical routines for the package.
 from datetime import datetime
 import numpy as np
 from scipy.interpolate import interp1d
+from scipy.stats import norm
 
 # Import from this package
 from . import mk_tools as mkt
@@ -46,7 +47,7 @@ def std_normal_var(s, var_s):
     # Deal with the other cases.
     return (s - np.sign(s))/var_s**0.5
 
-def sen_slope(obs_dts, obs, k_var, confidence=90.):
+def sen_slope(obs_dts, obs, k_var, alpha_cl=90.):
     """ Compute Sen's slope.
 
     Specifically, this computes the median of the slopes for each interval::
@@ -72,10 +73,10 @@ def sen_slope(obs_dts, obs, k_var, confidence=90.):
     """
 
     # Start with some sanity checks
-    if not isinstance(confidence, (float, int)):
-        raise Exception('Ouch! confidence should be of type int, not: %s' % (type(confidence)))
-    if confidence not in [90, 95]:
-        raise Exception('Ouch ! confidence must be 90 or 95, not: %f' % (float(confidence)))
+    if not isinstance(alpha_cl, (float, int)):
+        raise Exception('Ouch! confidence should be of type int, not: %s' % (type(alpha_cl)))
+    if alpha_cl not in [90, 95]:
+        raise Exception('Ouch ! confidence must be 90 or 95, not: %f' % (float(alpha_cl)))
     if not isinstance(k_var, (int, float)):
         raise Exception('Ouch ! The variance must be of type float, not: %s' % (type(k_var)))
 
@@ -92,13 +93,7 @@ def sen_slope(obs_dts, obs, k_var, confidence=90.):
     slope = np.nanmedian(d)
 
     # Apply the confidence limits
-    # Todo: can we generalize this ? Where are 1.645 and 1.96 coming from ?
-    if confidence == 90:
-        cconf = 1.645 * k_var**0.5
-    elif confidence == 95:
-        cconf = 1.96 * k_var**0.5
-    else:
-        raise Exception("Ouch ! This error is impossible.")
+    cconf = -norm.pdf((1-alpha_cl/100)/2) * k_var**0.5
 
     # Note: because python starts at 0 and not 1, we need an additional "-1" to the following
     # values of m_1 and m_2 to match the matlab implementation.
@@ -117,15 +112,17 @@ def sen_slope(obs_dts, obs, k_var, confidence=90.):
 def s_test(obs, obs_dts):
     """ Compute the S statistics (Si) for the Mann-Kendall test.
 
+    From Gilbert (1987).
+
     Args:
         obs (ndarray of floats): the observations array. Must be 1-D.
         obs_dts (ndarray of datetime.datetime): a list of observation datetimes.
 
     Returns:
-        (float, ndarray): S, n
-
-    Todo:
-        * fix/improve this docstring
+        (float, ndarray): S, n.
+                          S (float) = double sum on the sign of the difference between data pairs
+                          (Si).
+                          n (ndarray of int) = number of valid data in each year of the time series
 
     """
     # If the user gave me a list ... be nice and deal with it.
