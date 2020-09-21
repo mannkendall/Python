@@ -155,9 +155,6 @@ def nanautocorr(obs, nlags, r=0):
         `<https://www.mathworks.com/matlabcentral/fileexchange/43840-autocorrelation-and-partial-autocorrelation-with-nans>`__,
         MATLAB Central File Exchange. Retrieved August 26, 2020.
 
-    Todo:
-        * add reference to this docstrings.
-
     """
 
     # Some sanity checks
