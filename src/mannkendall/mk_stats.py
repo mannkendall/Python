@@ -19,22 +19,23 @@ from scipy.interpolate import interp1d
 # Import from this package
 from . import mk_tools as mkt
 
-def std_normal_var(s, k_var):
-    """ Compute the normalized standard variable Z.
+def std_normal_var(s, var_s):
+    """ Compute the normal standard variable Z.
 
     From Gilbert (1987).
 
     Args:
-        s (int): S statistics.
-        k_var (float): the variance computed from Kendall_var().
+        s (int): S statistics of the Mann-Kendall test computed from the S_test.
+        k_var (float): variance of the time series taking into account the ties in values and time.
+                       It should be computed by Kendall_var().
 
     Returns:
-        float: the normalized Z statistics.
+        float: S statistic weighted by the variance.
 
     """
 
     # First some anity checks.
-    for item in [s, k_var]:
+    for item in [s, var_s]:
         if not isinstance(item, (float, int)):
             raise Exception('Ouch ! Variables must be of type float, not: %s' % (type(item)))
 
@@ -43,7 +44,7 @@ def std_normal_var(s, k_var):
         return 0.0
 
     # Deal with the other cases.
-    return (s - np.sign(s))/k_var**0.5
+    return (s - np.sign(s))/var_s**0.5
 
 def sen_slope(obs_dts, obs, k_var, confidence=90.):
     """ Compute Sen's slope.
