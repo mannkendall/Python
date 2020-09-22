@@ -30,10 +30,10 @@ def test_nanprewhite_arok():
     # Loop throught the different tests
     for test_id in ['1', '2']:
         # Load the data
-        test_in = load_test_data('test%s_nanprewhite_ARok_in.csv' % (test_id))
-        test_out1 = load_test_data('test%s_nanprewhite_ARok_out1.csv' % (test_id))
-        test_out2 = load_test_data('test%s_nanprewhite_ARok_out2.csv' % (test_id))
-        test_out3 = load_test_data('test%s_nanprewhite_ARok_out3.csv' % (test_id))
+        test_in = load_test_data('nanprewhite_arok_test%s_in.csv' % (test_id))
+        test_out1 = load_test_data('nanprewhite_arok_test%s_out1.csv' % (test_id))
+        test_out2 = load_test_data('nanprewhite_arok_test%s_out2.csv' % (test_id))
+        test_out3 = load_test_data('nanprewhite_arok_test%s_out3.csv' % (test_id))
 
         # Run the function
         out = mkw.nanprewhite_arok(test_in, alpha_ak={'1':95, '2':90}[test_id])
@@ -60,8 +60,8 @@ def test_prewhite():
     """
 
     # Load the test data
-    test_in = load_test_data('test1_prewhite_D_in.csv')
-    test_out = load_test_data('test1_prewhite_D_out.csv', skip_header=1)
+    test_in = load_test_data('prewhite_test1_in.csv')
+    test_out = load_test_data('prewhite_test1_out.csv', skip_header=1)
 
     test_in_dts = np.array([datetime(int(item[0]), int(item[1]), int(item[2]),
                                      int(item[3]), int(item[4]), int(item[5]))

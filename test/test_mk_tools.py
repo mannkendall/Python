@@ -11,7 +11,6 @@ This file contains test functions for the mk_tools module.
 
 # Import from python packages
 from datetime import datetime
-from pathlib import Path
 import numpy as np
 import pytest
 
@@ -98,8 +97,8 @@ def test_nanautocorr():
         - proper correlation computation
     """
 
-    test_data = load_test_data('test_nanautocorr_in.csv')
-    test_out = load_test_data('test_nanautocorr_out.csv')
+    test_data = load_test_data('nanautocorr_test1_in.csv')
+    test_out = load_test_data('nanautocorr_test1_out.csv')
 
     out = mkt.nanautocorr(test_data, 2, r=1)
 
