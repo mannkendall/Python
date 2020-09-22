@@ -10,33 +10,14 @@ This file contains test functions for the mk_white module.
 """
 
 # Import from python packages
-from pathlib import Path
 from datetime import datetime
 import numpy as np
 
 # Import from current package
 from mannkendall import mk_white as mkw
 
-
-# Load some local test_data
-TEST_C_FN = Path(__file__).parent / 'test_data' / 'test_data_C.csv'
-TEST_BNB_FN = Path(__file__).parent / 'test_data' / 'BNB_data.csv'
-TEST_HPB_FN = Path(__file__).parent / 'test_data' / 'HPB_data.csv'
-
-C_DATA = np.genfromtxt(TEST_C_FN, skip_header=1, delimiter=';',
-                          missing_values='NaN', filling_values=np.nan)
-BNB_DATA = np.genfromtxt(TEST_BNB_FN, skip_header=1, delimiter=';',
-                          missing_values='NaN', filling_values=np.nan)
-HPB_DATA = np.genfromtxt(TEST_HPB_FN, skip_header=1, delimiter=';',
-                          missing_values='NaN', filling_values=np.nan)
-
-# Make sure the datetime are properly set
-C_DTS = np.array([datetime(int(row[0]), int(row[1]), int(row[2]),
-                                  int(row[3]), int(row[4]), int(row[5])) for row in C_DATA])
-BNB_DTS = np.array([datetime(int(row[0]), int(row[1]), int(row[2]),
-                                  int(row[3]), int(row[4]), int(row[5])) for row in BNB_DATA])
-HPB_DTS = np.array([datetime(int(row[0]), int(row[1]), int(row[2]),
-                                  int(row[3]), int(row[4]), int(row[5])) for row in HPB_DATA])
+# Get the local parameters I need to run the tests
+from .test_hardcoded import load_test_data, TEST_TOLERANCE
 
 def test_nanprewhite_arok():
     """ Test the std_normal_var() function.
@@ -46,29 +27,28 @@ def test_nanprewhite_arok():
 
     """
 
-    test1 = np.array([1, 3, 5, 2, 8, 1, 5, 5, 6, 7, 1, np.nan, np.nan, 4])
-    out1 = [-0.4418, 0.2590, test1, 0]
+    # Loop throught the different tests
+    for test_id in ['1', '2']:
+        # Load the data
+        test_in = load_test_data('test%s_nanprewhite_ARok_in.csv' % (test_id))
+        test_out1 = load_test_data('test%s_nanprewhite_ARok_out1.csv' % (test_id))
+        test_out2 = load_test_data('test%s_nanprewhite_ARok_out2.csv' % (test_id))
+        test_out3 = load_test_data('test%s_nanprewhite_ARok_out3.csv' % (test_id))
 
-    test2 = C_DATA[:, 6]
-    out2 = [0.8257, 0.1701, np.array([np.nan, 2.3486, 4.1972, np.nan, np.nan, 9.1559,
-                                      -2.5368, 7.5045, 4.4632, 5.7246, 6.1604, -0.4039]), 95]
+        # Run the function
+        out = mkw.nanprewhite_arok(test_in, alpha_ak={'1':95, '2':90}[test_id])
 
-    # Loop through the different tests
-    for (test_in, test_out) in [(test1, out1), (test2, out2)]:
-
-        out = mkw.nanprewhite_arok(test_in)
-
-        assert np.round(np.array(out[0]), 4) == test_out[0]
-        assert np.round(np.array(out[1]), 4) == test_out[1]
-
-        assert len(out[2]) == len(test_out[2])
-        for (ind, item) in enumerate(out[2]):
+        # Assert the outcome
+        assert np.round(np.array(out[0]), TEST_TOLERANCE) == np.round(test_out1, TEST_TOLERANCE)
+        assert len(out[1]) == len(test_out2)
+        # Assert the vector, also if it contains NaNs.
+        for (ind, item) in enumerate(out[1]):
             if np.isnan(item):
-                assert np.isnan(test_out[2][ind])
+                assert np.isnan(test_out2[ind])
             else:
-                assert np.round(item, 4) == test_out[2][ind]
+                assert np.round(item, TEST_TOLERANCE) == np.round(test_out2[ind], TEST_TOLERANCE)
 
-        assert out[3] == test_out[3]
+        assert out[2] == test_out3
 
 
 def test_prewhite():
@@ -79,17 +59,21 @@ def test_prewhite():
 
     """
 
-    # Test both the BNB and HBP datasets.
-    for (OBS_DTS, OBS) in [[BNB_DTS, BNB_DATA],
-                           [HPB_DTS, HPB_DATA]]:
+    # Load the test data
+    test_in = load_test_data('test1_prewhite_D_in.csv')
+    test_out = load_test_data('test1_prewhite_D_out.csv', skip_header=1)
 
-        # Run the function
-        out = mkw.prewhite(OBS[:, 6], OBS_DTS, 2)
+    test_in_dts = np.array([datetime(int(item[0]), int(item[1]), int(item[2]),
+                                     int(item[3]), int(item[4]), int(item[5]))
+                            for item in test_in])
 
-        # Check the output
-        for (ind, item) in enumerate(['pw', 'tfpw_y', 'tfpw_ws', 'vctfpw']):
-            for j in range(len(out[0][item])):
-                if np.isnan(out[0][item][j]):
-                    assert np.isnan(OBS[j, 7+ind])
-                else:
-                    assert np.abs(out[0][item][j] - OBS[j, 7+ind]) < 1e-7
+    # Run the function
+    out = mkw.prewhite(test_in[:, 6], test_in_dts, 2)
+
+    # Check the output
+    for (ind, item) in enumerate(['pw', 'pw_cor', 'tfpw_y', 'tfpw_ws', 'vctfpw']):
+        for (jnd, jtem) in enumerate(test_out[:, ind+1]):
+            if np.isnan(out[item][jnd]):
+                assert np.isnan(jtem)
+            else:
+                assert np.round(out[item][jnd], TEST_TOLERANCE) == np.round(jtem, TEST_TOLERANCE)

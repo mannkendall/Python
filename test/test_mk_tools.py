@@ -19,7 +19,7 @@ import pytest
 from mannkendall import mk_tools as mkt
 
 # Get the local parameters I need to run the tests
-from .test_hardcoded import TEST_DATA_LOC, TEST_TOLERANCE
+from .test_hardcoded import load_test_data, TEST_TOLERANCE
 
 def test_de_sort():
     """ Test the de_sort() utility function.
@@ -98,12 +98,8 @@ def test_nanautocorr():
         - proper correlation computation
     """
 
-    test_data = np.genfromtxt(TEST_DATA_LOC / 'test_nanautocorr_in.csv',
-                              skip_header=0, delimiter=',',
-                              missing_values='NaN', filling_values=np.nan)
-    test_out = np.genfromtxt(TEST_DATA_LOC / 'test_nanautocorr_out.csv',
-                             skip_header=0, delimiter=',',
-                             missing_values='NaN', filling_values=np.nan)
+    test_data = load_test_data('test_nanautocorr_in.csv')
+    test_out = load_test_data('test_nanautocorr_out.csv')
 
     out = mkt.nanautocorr(test_data, 2, r=1)
 
