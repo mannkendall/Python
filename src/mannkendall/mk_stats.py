@@ -35,10 +35,11 @@ def std_normal_var(s, var_s):
 
     """
 
-    # First some anity checks.
-    for item in [s, var_s]:
-        if not isinstance(item, (float, int)):
-            raise Exception('Ouch ! Variables must be of type float, not: %s' % (type(item)))
+    # First some sanity checks.
+    if not isinstance(s, (int)):
+        raise Exception('Ouch ! Variable s must be of type int, not: %s' % (type(s)))
+    if not isinstance(var_s, (int, float)):
+        raise Exception('Ouch ! Variable var_s must be of type float, not: %s' % (type(s)))
 
     # Deal with the case when s is 0
     if s == 0:
@@ -61,8 +62,7 @@ def sen_slope(obs_dts, obs, k_var, alpha_cl=90.):
         obs_dts (ndarray of datetime.datetime): an array of observation times. Must be 1-D.
         obs (ndarray of floats): the data array. Must be 1-D.
         k_var (float): Kendall variance, computed with Kendall_var.
-        confidence (float, optional): the desired confidence limit, in %. Must be 90 or 95.
-                                      Defaults to 90.
+        confidence (float, optional): the desired confidence limit, in %. Defaults to 90.
 
     Return:
         (float, float, float): Sen's slope, lower confidence limit, upper confidence limit.
@@ -75,8 +75,8 @@ def sen_slope(obs_dts, obs, k_var, alpha_cl=90.):
     # Start with some sanity checks
     if not isinstance(alpha_cl, (float, int)):
         raise Exception('Ouch! confidence should be of type int, not: %s' % (type(alpha_cl)))
-    if alpha_cl not in [90, 95]:
-        raise Exception('Ouch ! confidence must be 90 or 95, not: %f' % (float(alpha_cl)))
+    if alpha_cl > 100 or alpha_cl < 0:
+        raise Exception('Ouch ! confidence must be 0<=alpha_cl<=100, not: %f' % (float(alpha_cl)))
     if not isinstance(k_var, (int, float)):
         raise Exception('Ouch ! The variance must be of type float, not: %s' % (type(k_var)))
 
@@ -157,14 +157,14 @@ def s_test(obs, obs_dts):
     # Create a vector to keep track of the results
     sij = np.zeros(max_year - min_year + 1) * np.nan
 
-    for (yr_ind, yr) in enumerate(range(min_year, max_year+1)):
+    for (yr_ind, year) in enumerate(range(min_year, max_year+1)):
         #How valid points do I have :
-        n[yr_ind] = np.count_nonzero(~np.isnan(obs[obs_years == yr]))
+        n[yr_ind] = np.count_nonzero(~np.isnan(obs[obs_years == year]))
 
         # Compute s for that year, by summing the signs for the differences with all the upcoming
         # years
-        sij[yr_ind] = np.nansum([np.sign(item - obs[obs_years == yr])
-                                 for yr2 in range(yr+1, max_year+1)
+        sij[yr_ind] = np.nansum([np.sign(item - obs[obs_years == year])
+                                 for yr2 in range(year+1, max_year+1)
                                  for item in obs[obs_years == yr2]])
 
     return (np.nansum(sij), n)
