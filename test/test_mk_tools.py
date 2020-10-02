@@ -76,8 +76,8 @@ def test_nb_tie():
                    '2': 0.01}
 
     for test_id in test_params:
-        test_data = load_test_data('nb_tie_test%s_in.csv' % (test_id))
-        test_out = load_test_data('nb_tie_test%s_out.csv' % (test_id))
+        test_data = load_test_data('Nb_tie_test%s_in.csv' % (test_id))
+        test_out = load_test_data('Nb_tie_test%s_out.csv' % (test_id))
 
         # Run the function
         out = mkt.nb_tie(test_data, test_params[test_id])
