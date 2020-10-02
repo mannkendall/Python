@@ -36,6 +36,9 @@ def std_normal_var(s, var_s):
     """
 
     # First some sanity checks.
+    # Be forgiving if I got a float ...
+    if isinstance(s, float) and s.is_integer():
+        s = int(s)
     if not isinstance(s, (int)):
         raise Exception('Ouch ! Variable s must be of type int, not: %s' % (type(s)))
     if not isinstance(var_s, (int, float)):

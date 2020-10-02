@@ -109,7 +109,6 @@ def compute_mk_stat(obs_dts, obs, resolution, alpha_mk=95, alpha_cl=90):
         result['ss'] = 0
 
     (slope, slope_min, slope_max) = mks.sen_slope(obs_dts, obs, vari)
-    result['ak'] = np.nan
     # Transform the slop in 1/yr. TODO: use precise year length ?
     result['slope'] = slope * 3600 * 24 * 365.25
     result['ucl'] = slope_max * 3600 * 24 *365.25 # idem

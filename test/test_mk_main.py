@@ -61,6 +61,49 @@ def test_prob_3pw():
         assert np.round(out[0], TEST_TOLERANCE) == np.round(test_out1, TEST_TOLERANCE)
         assert np.round(out[1], TEST_TOLERANCE) == np.round(test_out2, TEST_TOLERANCE)
 
+def test_compute_mk_stats():
+    """ Test the compute_mk_stats() function.
+
+    This method specifically tests:
+        - proper computation
+
+    """
+
+    test_params = {'1': 'default', '2': [90, 95]}
+
+    # Loop through the tests
+    for test_id in test_params:
+
+        # Load the test data
+        test_in1 = load_test_data('compute_MK_stat_test%s_in1.csv' % (test_id))
+        test_in2 = load_test_data('compute_MK_stat_test%s_in2.csv' % (test_id))
+        test_in3 = float(load_test_data('compute_MK_stat_test%s_in3.csv' % (test_id)))
+        test_out1 = load_test_data('compute_MK_stat_test%s_out1.csv' % (test_id), skip_header=1)
+        test_out2 = load_test_data('compute_MK_stat_test%s_out2.csv' % (test_id))
+        test_out3 = load_test_data('compute_MK_stat_test%s_out3.csv' % (test_id))
+        test_out4 = load_test_data('compute_MK_stat_test%s_out4.csv' % (test_id))
+
+        # Create proper datetimes
+        test_in1_dts = np.array([datetime(int(item[0]), int(item[1]), int(item[2]),
+                                          int(item[3]), int(item[4]), int(item[5]))
+                                 for item in test_in1])
+
+
+        # Run the function
+        if test_params[test_id] == 'default':
+            out = mk.compute_mk_stat(test_in1_dts, test_in2, test_in3)
+        else:
+            out = mk.compute_mk_stat(test_in1_dts, test_in2, test_in3,
+                                     alpha_mk=test_params[test_id][0],
+                                     alpha_cl=test_params[test_id][1])
+
+        for (item_ind, item) in enumerate(['p', 'ss', 'slope', 'ucl', 'lcl']):
+            assert np.round(out[0][item], TEST_TOLERANCE) == np.round(test_out1[item_ind],
+                                                                                TEST_TOLERANCE)
+        assert np.round(out[1], TEST_TOLERANCE) == np.round(test_out2, TEST_TOLERANCE)
+        assert np.round(out[2], TEST_TOLERANCE) == np.round(test_out3, TEST_TOLERANCE)
+        assert np.round(out[3], TEST_TOLERANCE) == np.round(test_out4, TEST_TOLERANCE)
+
 def test_mk_multi_tas():
     """ Test the mk_multi_tas() function.
 #
