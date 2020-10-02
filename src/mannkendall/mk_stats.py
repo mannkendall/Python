@@ -93,21 +93,22 @@ def sen_slope(obs_dts, obs, k_var, alpha_cl=90.):
     slope = np.nanmedian(d)
 
     # Apply the confidence limits
-    cconf = -norm.pdf((1-alpha_cl/100)/2) * k_var**0.5
+    cconf = -norm.ppf((1-alpha_cl/100)/2) * k_var**0.5
 
     # Note: because python starts at 0 and not 1, we need an additional "-1" to the following
     # values of m_1 and m_2 to match the matlab implementation.
-    m_1 = 0.5 * (len(d) - cconf) - 1
-    m_2 = 0.5 * (len(d) + cconf) - 1
+    m_1 = (0.5 * (len(d) - cconf)) - 1
+    m_2 = (0.5 * (len(d) + cconf)) - 1
 
     # Let's setup a quick interpolation scheme to get the best possible confidence limits
-    f = interp1d(np.arange(0, len(d), 1), np.sort(d), kind='linear', fill_value=(d[0], d[-1]),
+    f = interp1d(np.arange(0, len(d), 1), np.sort(d), kind='linear',
+                 fill_value=(np.sort(d)[0], np.sort(d)[-1]),
                  assume_sorted=True, bounds_error=False)
 
     lcl = f(m_1)
     ucl = f(m_2)
 
-    return (slope, lcl, ucl)
+    return (float(slope), float(lcl), float(ucl))
 
 def s_test(obs, obs_dts):
     """ Compute the S statistics (Si) for the Mann-Kendall test.

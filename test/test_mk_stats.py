@@ -29,12 +29,12 @@ def test_std_normal_var():
     """
 
     # Load the test data
-    test_data1 = int(load_test_data('STD_normal_var_test1_in1.csv'))
-    test_data2 = float(load_test_data('STD_normal_var_test1_in2.csv'))
+    test_in1 = int(load_test_data('STD_normal_var_test1_in1.csv'))
+    test_in2 = float(load_test_data('STD_normal_var_test1_in2.csv'))
     test_out = load_test_data('STD_normal_var_test1_out.csv')
 
     # Run the function
-    out = mks.std_normal_var(test_data1, test_data2)
+    out = mks.std_normal_var(test_in1, test_in2)
 
     assert np.round(out, TEST_TOLERANCE) == np.round(test_out, TEST_TOLERANCE)
 
@@ -47,18 +47,18 @@ def test_s_test():
     """
 
     # Load the data
-    test_data1 = load_test_data('S_test_test1_in1.csv')
-    test_data2 = load_test_data('S_test_test1_in2.csv')
+    test_in1 = load_test_data('S_test_test1_in1.csv')
+    test_in2 = load_test_data('S_test_test1_in2.csv')
     test_out1 = load_test_data('S_test_test1_out1.csv')
     test_out2 = load_test_data('S_test_test1_out2.csv')
 
-    test_data2_dts = np.array([datetime(int(item[0]), int(item[1]), int(item[2]),
-                                       int(item[3]), int(item[4]), int(item[5]))
-                              for item in test_data2])
-
+    # Create proper datetime entries
+    test_in2_dts = np.array([datetime(int(item[0]), int(item[1]), int(item[2]),
+                                      int(item[3]), int(item[4]), int(item[5]))
+                             for item in test_in2])
 
     # Run the function
-    out = mks.s_test(test_data1, test_data2_dts)
+    out = mks.s_test(test_in1, test_in2_dts)
 
     # Validate the output
     assert np.round(out[0], TEST_TOLERANCE) == np.round(test_out1, TEST_TOLERANCE)
@@ -73,8 +73,26 @@ def test_sen_slope():
 
     """
 
-    #out = mks.sen_slope(TEST_OBS_DTS, TEST_DATA[:, 6], 118.9091, confidence=90)
-    # Check the outcome., remembering that the python routine *always* returns the slope in 1/s !
-    # TODO: make this test with bigger precision, to check that the lcl and ucl are correct.
-    #assert np.all(np.round(np.array(out) * 24 * 3600, 4) == np.array([0.0328, 0.0246, 0.0354]))
-    assert True
+    # Load the data
+    test_in1 = load_test_data('Sen_slope_test1_in1.csv')
+    test_in2 = load_test_data('Sen_slope_test1_in2.csv')
+    test_in3 = float(load_test_data('Sen_slope_test1_in3.csv'))
+    test_out1 = load_test_data('Sen_slope_test1_out1.csv')
+    test_out2 = load_test_data('Sen_slope_test1_out2.csv')
+    test_out3 = load_test_data('Sen_slope_test1_out3.csv')
+
+    # Create proper datetime entries
+    test_in1_dts = np.array([datetime(int(item[0]), int(item[1]), int(item[2]),
+                                      int(item[3]), int(item[4]), int(item[5]))
+                             for item in test_in1])
+
+    # Run the function
+    out = mks.sen_slope(test_in1_dts, test_in2, test_in3)
+
+    # Here, I need to remember that the slopes return are in 1/s, but matlab gives them in 1/d
+    out = np.array(out) * 3600 * 24
+
+    # Validate the output
+    assert np.round(out[0], TEST_TOLERANCE) == np.round(test_out1, TEST_TOLERANCE)
+    assert np.round(out[1], TEST_TOLERANCE) == np.round(test_out2, TEST_TOLERANCE)
+    assert np.round(out[2], TEST_TOLERANCE) == np.round(test_out3, TEST_TOLERANCE)
