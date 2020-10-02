@@ -12,7 +12,6 @@ This file contains useful tools for the package.
 """
 
 # Import the required packages
-from collections import Counter
 import numpy as np
 from scipy import stats as spstats
 

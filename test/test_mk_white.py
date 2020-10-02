@@ -32,10 +32,10 @@ def test_nanprewhite_arok():
     # Loop throught the different tests
     for test_id in test_params:
         # Load the data
-        test_in = load_test_data('nanprewhite_arok_test%s_in.csv' % (test_id))
-        test_out1 = load_test_data('nanprewhite_arok_test%s_out1.csv' % (test_id))
-        test_out2 = load_test_data('nanprewhite_arok_test%s_out2.csv' % (test_id))
-        test_out3 = load_test_data('nanprewhite_arok_test%s_out3.csv' % (test_id))
+        test_in = load_test_data('nanprewhite_AR_test%s_in.csv' % (test_id))
+        test_out1 = load_test_data('nanprewhite_AR_test%s_out1.csv' % (test_id))
+        test_out2 = load_test_data('nanprewhite_AR_test%s_out2.csv' % (test_id))
+        test_out3 = load_test_data('nanprewhite_AR_test%s_out3.csv' % (test_id))
 
         # Run the function
         out = mkw.nanprewhite_arok(test_in, alpha_ak=test_params[test_id])
