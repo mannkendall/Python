@@ -62,18 +62,28 @@ def test_nb_tie():
         - proper sectioning of the data array.
     """
 
-    test_array = np.array([0, 1, 2, 3, 4, 5, 6])
-    test_array_2 = np.array([1, 3, 5, 2, 8, 1, 5, 5, 6, 7, 1, np.nan, np.nan, 4])
-
+   # A few basic tests to begin with
     pytest.raises(Exception, mkt.nb_tie, 'a', 2) # Check exceptions
     pytest.raises(Exception, mkt.nb_tie, np.zeros(2), '2') # Check exceptions
-    assert np.isnan(mkt.nb_tie(test_array * np.nan, 2)) # nan if all nan's
+    assert np.isnan(mkt.nb_tie(np.zeros(5) * np.nan, 2)) # nan if all nan's
     assert np.isnan(mkt.nb_tie(np.zeros(4), 2)) # nans if less than 4 valid data points.
     assert np.all(mkt.nb_tie(np.ones(5), 2) == np.array([5])) # Identical values
     assert np.all(mkt.nb_tie(np.array([0, 0, 0, 1, 1]), 2.4) == np.array([5])) # res > interval
     assert np.all(mkt.nb_tie(np.array([1, 1, 1, 1, 1, np.nan]), 2.4) == np.array([5])) # same values
-    assert np.all(mkt.nb_tie(test_array, 2.0) == np.array([2, 2, 3])) # normal case
-    assert np.all(mkt.nb_tie(test_array_2, 2.0) == np.array([4, 2, 4, 2])) # normal case
+
+    # Now some validation tests with matlab
+    test_params = {'1': 2.,
+                   '2': 0.01}
+
+    for test_id in test_params:
+        test_data = load_test_data('nb_tie_test%s_in.csv' % (test_id))
+        test_out = load_test_data('nb_tie_test%s_out.csv' % (test_id))
+
+        # Run the function
+        out = mkt.nb_tie(test_data, test_params[test_id])
+
+        #assert np.all(np.round(out, TEST_TOLERANCE) == np.round(test_out, TEST_TOLERANCE))
+
 
 def test_kendall_var():
     """ Test the kendall_var function.
@@ -82,13 +92,16 @@ def test_kendall_var():
         - proper variance computation
     """
 
-    # Some fake data
-    test_array_2 = np.array([1, 3, 5, 2, 8, 1, 5, 5, 6, 7, 1, np.nan, np.nan, 4])
-    t = np.array([4, 2, 4, 2])
-    n = np.array([7, 5])
+    # Load the test data
+    test_data1 = load_test_data('Kendall_var_test1_in1.csv')
+    test_data2 = load_test_data('Kendall_var_test1_in2.csv')
+    test_data3 = load_test_data('Kendall_var_test1_in3.csv')
+    test_out = load_test_data('Kendall_var_test1_out.csv')
 
-    assert mkt.kendall_var(test_array_2, t, n) == 140 # normal case
+    # Run the function
+    out = mkt.kendall_var(test_data1, test_data2, test_data3)
 
+    assert  np.round(out, TEST_TOLERANCE) == np.round(test_out, TEST_TOLERANCE)
 
 def test_nanautocorr():
     """ Test the nanautocorr function.
