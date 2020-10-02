@@ -82,8 +82,7 @@ def test_nb_tie():
         # Run the function
         out = mkt.nb_tie(test_data, test_params[test_id])
 
-        #assert np.all(np.round(out, TEST_TOLERANCE) == np.round(test_out, TEST_TOLERANCE))
-
+        assert np.all(np.round(out, TEST_TOLERANCE) == np.round(test_out, TEST_TOLERANCE))
 
 def test_kendall_var():
     """ Test the kendall_var function.
