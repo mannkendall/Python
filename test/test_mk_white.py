@@ -27,8 +27,10 @@ def test_nanprewhite_arok():
 
     """
 
+    test_params = {'1':95, '2':90}
+
     # Loop throught the different tests
-    for test_id in ['1', '2']:
+    for test_id in test_params:
         # Load the data
         test_in = load_test_data('nanprewhite_arok_test%s_in.csv' % (test_id))
         test_out1 = load_test_data('nanprewhite_arok_test%s_out1.csv' % (test_id))
@@ -36,7 +38,7 @@ def test_nanprewhite_arok():
         test_out3 = load_test_data('nanprewhite_arok_test%s_out3.csv' % (test_id))
 
         # Run the function
-        out = mkw.nanprewhite_arok(test_in, alpha_ak={'1':95, '2':90}[test_id])
+        out = mkw.nanprewhite_arok(test_in, alpha_ak=test_params[test_id])
 
         # Assert the outcome
         assert np.round(np.array(out[0]), TEST_TOLERANCE) == np.round(test_out1, TEST_TOLERANCE)
@@ -59,21 +61,28 @@ def test_prewhite():
 
     """
 
-    # Load the test data
-    test_in = load_test_data('prewhite_test1_in.csv')
-    test_out = load_test_data('prewhite_test1_out.csv', skip_header=1)
+    test_params = {'1': 2, '2': 0.01}
 
-    test_in_dts = np.array([datetime(int(item[0]), int(item[1]), int(item[2]),
-                                     int(item[3]), int(item[4]), int(item[5]))
-                            for item in test_in])
+    # loop throught the different tests
+    for test_id in test_params:
 
-    # Run the function
-    out = mkw.prewhite(test_in[:, 6], test_in_dts, 2)
+        # Load the test data
+        test_in = load_test_data('prewhite_test%s_in.csv' % (test_id))
+        test_out = load_test_data('prewhite_test%s_out.csv' % (test_id), skip_header=1)
 
-    # Check the output
-    for (ind, item) in enumerate(['pw', 'pw_cor', 'tfpw_y', 'tfpw_ws', 'vctfpw']):
-        for (jnd, jtem) in enumerate(test_out[:, ind+1]):
-            if np.isnan(out[item][jnd]):
-                assert np.isnan(jtem)
-            else:
-                assert np.round(out[item][jnd], TEST_TOLERANCE) == np.round(jtem, TEST_TOLERANCE)
+        # Convert into proper datetime objects
+        test_in_dts = np.array([datetime(int(item[0]), int(item[1]), int(item[2]),
+                                         int(item[3]), int(item[4]), int(item[5]))
+                                for item in test_in])
+
+        # Run the function
+        out = mkw.prewhite(test_in[:, 6], test_in_dts, test_params[test_id])
+
+        # Check the output
+        for (ind, item) in enumerate(['pw', 'pw_cor', 'tfpw_y', 'tfpw_ws', 'vctfpw']):
+            for (jnd, jtem) in enumerate(test_out[:, ind+1]):
+                if np.isnan(out[item][jnd]):
+                    assert np.isnan(jtem)
+                else:
+                    assert np.round(out[item][jnd], TEST_TOLERANCE) == np.round(jtem,
+                                                                                TEST_TOLERANCE)
