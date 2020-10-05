@@ -12,6 +12,7 @@ This file contains the core routines for the mannkendall package.
 """
 
 # Import python packages
+import warnings
 import numpy as np
 import scipy.stats as spstats
 
@@ -116,8 +117,8 @@ def compute_mk_stat(obs_dts, obs, resolution, alpha_mk=95, alpha_cl=90):
 
     return (result, s, vari, z)
 
-def mk_temp_aggre(multi_obs_dts, multi_obs, resolution, pw_method='3pw',
-                  alpha_mk=95, alpha_cl=90, alpha_xhomo=90, alpha_ak=95):
+def mk_temp_aggr(multi_obs_dts, multi_obs, resolution, pw_method='3pw',
+                 alpha_mk=95, alpha_cl=90, alpha_xhomo=90, alpha_ak=95):
     """ Applies the Mann-Kendall test and the Sen slope on the given time granularity for a data set
     split into different temporal aggregations.
 
@@ -165,9 +166,9 @@ def mk_temp_aggre(multi_obs_dts, multi_obs, resolution, pw_method='3pw',
                           0 if the test is not ss at the alpha_MK confidence level.
                           -1 if the test is a TFPW_Y false positive at alpha_MK confidence level
                           -2 if the test is a PW false positive at alpha_MK confidence level
-        'slope' (float): Sen's slope in units/y
-        'ucl' (float): upper confidence level in units/y
-        'lcl' (float): lower confidence level in units/y
+            'slope' (float): Sen's slope in units/y
+            'ucl' (float): upper confidence level in units/y
+            'lcl' (float): lower confidence level in units/y
 
     Note:
         Sources:
@@ -227,9 +228,9 @@ def mk_temp_aggre(multi_obs_dts, multi_obs, resolution, pw_method='3pw',
     # First, apply the necessary prewhitening to *all* the data combined.
     # To do that, I need to put the data in order !
     sort_ind = np.concatenate(multi_obs_dts).argsort()
-    (multi_obs_pw, ak_y) = mkw.prewhite(np.concatenate(multi_obs)[sort_ind],
-                                        np.concatenate(multi_obs_dts)[sort_ind],
-                                        resolution)
+    multi_obs_pw = mkw.prewhite(np.concatenate(multi_obs)[sort_ind],
+                                np.concatenate(multi_obs_dts)[sort_ind],
+                                resolution, alpha_ak=alpha_ak)
 
     # Re-split the data according to the original input ... including
     for key in multi_obs_pw:
@@ -255,8 +256,7 @@ def mk_temp_aggre(multi_obs_dts, multi_obs, resolution, pw_method='3pw',
         # First, let's make sure there are enough data in the period.
         if len(multi_obs[ta_ind]) <= 1:
             result[ta_ind] = {'p': np.nan, 'ss': np.nan, 'slope': np.nan, 'ucl': np.nan,
-                              'lcl': np.nan, 'median': np.nan, 'slope_p': np.nan, 'ucl_p': np.nan,
-                              'lcl_p': np.nan}
+                              'lcl': np.nan}
             continue
 
         # Now, run whichever method was requested
@@ -264,52 +264,39 @@ def mk_temp_aggre(multi_obs_dts, multi_obs, resolution, pw_method='3pw',
         if pw_method in ['pw', 'tfpw_y', 'tfpw_ws', 'vctfpw']:
             (result[ta_ind], s, vari, z[ta_ind]) = compute_mk_stat(multi_obs_dts[ta_ind],
                                                                    multi_obs_pw[pw_method][ta_ind],
-                                                                   resolution)
+                                                                   resolution, alpha_mk=alpha_mk,
+                                                                   alpha_cl=alpha_cl)
             s_tot['-'] += s
             var_tot['-'] += vari
-            ak = ak_y[pw_method]
+            #ak = ak_y[pw_method]
 
         elif pw_method == '3pw':
 
             (result_pw, s_pw, vari_pw, _) = compute_mk_stat(multi_obs_dts[ta_ind],
-                                                            multi_obs_pw['pw'][ta_ind], resolution)
+                                                            multi_obs_pw['pw'][ta_ind], resolution,
+                                                            alpha_mk=alpha_mk, alpha_cl=alpha_cl)
             s_tot['pw'] += s_pw
             var_tot['pw'] += vari_pw
 
             (result_tfpw_y, s_tfpw_y, vari_tfpw_y, _) = \
-                compute_mk_stat(multi_obs_dts[ta_ind], multi_obs_pw['tfpw_y'][ta_ind], resolution)
+                compute_mk_stat(multi_obs_dts[ta_ind], multi_obs_pw['tfpw_y'][ta_ind], resolution,
+                                alpha_mk=alpha_mk, alpha_cl=alpha_cl)
             s_tot['tfpw_y'] += s_tfpw_y
             var_tot['tfpw_y'] += vari_tfpw_y
 
             (result_vctfpw, _, _, z[ta_ind]) = compute_mk_stat(multi_obs_dts[ta_ind],
                                                                multi_obs_pw['vctfpw'][ta_ind],
-                                                               resolution)
+                                                               resolution, alpha_mk=alpha_mk,
+                                                               alpha_cl=alpha_cl)
 
             # Determine the statistical significance
-            if (result_pw['p'] <= 0.05) & (result_tfpw_y['p'] <= 0.05):
-                # If both methods are above 95%, give the worst of both.
-                result[ta_ind]['ss'] = 100. * (1 - np.max([result_pw['p'], result_tfpw_y['p']]))
-            elif (0.1 >= result_pw['p'] > 0.05) & (0.1 >= result_tfpw_y['p'] <= 0.05):
-                # Idem, but if both methods are between 90% and 95%
-                result[ta_ind]['ss'] = 100. * (1 - np.max([result_pw['p'], result_tfpw_y['p']]))
-            elif (result_pw['p'] > 0.05) & (result_tfpw_y['p'] <= 0.05):
-                # False positive
-                result[ta_ind]['ss'] = -1
-            elif (result_pw['p'] <= 0.05) & (result_tfpw_y['p'] > 0.05):
-                # False negative
-                result[ta_ind]['ss'] = -2
-            elif (result_pw['p'] <= 0.1) & (result_tfpw_y['p'] > 0.1):
-                #TODO: we will actually never enter this place: we would get caught by the previous one!
-                # False positive
-                result[ta_ind]['ss'] = -3
-            else:
-                result[ta_ind]['ss'] = 0
+            (result[ta_ind]['p'], result[ta_ind]['ss']) = prob_3pw(result_pw['p'],
+                                                                   result_tfpw_y['p'],
+                                                                   alpha_mk)
 
             # Let's assign the remaining variables
-            for item in ['slope', 'ucl', 'lcl', 'median', 'slope_p', 'ucl_p', 'lcl_p']:
+            for item in ['slope', 'ucl', 'lcl']:
                 result[ta_ind][item] = result_vctfpw[item]
-
-            ak = ak_y['vctfpw']
 
         else:
             raise Exception('Ouch ! Unknowkn pw_method: %s' % (pw_method))
@@ -318,91 +305,67 @@ def mk_temp_aggre(multi_obs_dts, multi_obs, resolution, pw_method='3pw',
     # Now let's look at the sum of all the time aggregations.
     # TODO: simplify (by function grouping) the following two if clauses
     result[n_tas] = {}
-    result[n_tas]['ak'] = ak
+    #result[n_tas]['ak'] = ak
 
     if pw_method != '3pw':
 
         z_tot = mks.std_normal_var(s_tot['-'], var_tot['-'])
 
-        if np.sum([len(item) for item in multi_obs]) > 10: # TODO: count all values, including nans?
+        if np.sum([np.count_nonzero(~np.isnan(item)) for item in multi_obs]) > 10:
             result[n_tas]['p'] = 2 * (1 - spstats.norm.cdf(np.abs(z_tot), loc=0, scale=1))
         else:
+            # TODO: check this !
             result[n_tas]['p'] = mkh.PROB_MK_N[np.abs(s_tot['-']),
-                                           np.sum([len(item) for item in multi_obs])] # TODO: check this !
+                                               np.sum([np.count_nonzero(~np.isnan(item)) for item
+                                                       in multi_obs])]
 
         # Compute the statistical significance
-        if result[n_tas]['p'] <= 0.1:
-            result[n_tas]['ss'] = 100 * (1.-result[n_tas]['p'])
+        if result[n_tas]['p'] <= 1-alpha_mk/100:
+            result[n_tas]['ss'] = alpha_mk
         else:
             result[n_tas]['ss'] = 0
 
-        # Compute the median
-        result[n_tas]['median'] = np.nanmedian(np.concatenate(multi_obs))
-
         # Compute the chi-square to test the homogeneity between months
-        xhomo = np.nansum(z**2) - n_tas *np.nanmean(z)**2 # TODO: check ok with matlab code.
-
-        if xhomo <= 4.575:
-            result[n_tas]['xhomo'] = 1
-        else:
-            result[n_tas]['xhomo'] = 0
+        xhomo = np.nansum(z**2) - n_tas * np.nanmean(z)**2
 
     if pw_method == '3pw':
 
         z_tot_pw = mks.std_normal_var(s_tot['pw'], var_tot['pw'])
 
-
         if np.sum([np.count_nonzero(~np.isnan(item)) for item in multi_obs]) > 10:
             p_tot_pw = 2 * (1 - spstats.norm.cdf(np.abs(z_tot_pw), loc=0, scale=1))
         else:
             p_tot_pw = mkh.PROB_MK_N[np.abs(s_tot['pw']),
-                                 np.sum([np.count_nonzero(~np.isnan(item)) for item in multi_obs])] # TODO: check this !
+                                     np.sum([np.count_nonzero(~np.isnan(item)) for item
+                                             in multi_obs])] # TODO: check this !
 
         z_tot_tfpw_y = mks.std_normal_var(s_tot['tfpw_y'], var_tot['tfpw_y'])
 
-        # TODO: check this with the new matlab code.
         if np.sum([np.count_nonzero(~np.isnan(item)) for item in multi_obs]) > 10:
-            p_tot_tfpw_y = 2 * (1 - spstats.norm.cdf(np.abs(z_tot_pw), loc=0, scale=1))
+            p_tot_tfpw_y = 2 * (1 - spstats.norm.cdf(np.abs(z_tot_tfpw_y), loc=0, scale=1))
         else:
             p_tot_tfpw_y = mkh.PROB_MK_N[np.abs(s_tot['tfpw_y']),
-                                     np.sum([np.count_nonzero(~np.isnan(item))
-                                             for item in multi_obs])] # TODO: check this !
+                                         np.sum([np.count_nonzero(~np.isnan(item))
+                                                 for item in multi_obs])] # TODO: check this !
 
         # Determine the statistical significance
-        if (p_tot_pw <= 0.05) & (p_tot_tfpw_y <= 0.05):
-            # If both methods are above 95%, give the worst of both.
-            result[n_tas]['ss'] = 100. * (1 - np.max([p_tot_pw, p_tot_tfpw_y]))
-        elif (0.1 >= p_tot_pw > 0.05) & (0.1 >= result_tfpw_y['p'] <= 0.05):
-            # Idem, but if both methods are between 90% and 95%
-            result[n_tas]['ss'] = 100. * (1 - np.max([p_tot_pw, p_tot_tfpw_y]))
-        elif (p_tot_pw > 0.05) & (p_tot_tfpw_y <= 0.05):
-            # False positive
-            result[n_tas]['ss'] = -1
-        elif (p_tot_pw <= 0.05) & (p_tot_tfpw_y > 0.05):
-            # False negative
-            result[n_tas]['ss'] = -2
-        elif (p_tot_pw <= 0.1) & (p_tot_tfpw_y > 0.1):
-            #TODO: we will actually never enter this place: we would get caught by the previous one!
-            # False positive
-            result[n_tas]['ss'] = -3
-        else:
-            result[n_tas]['ss'] = 0
+        (result[n_tas]['p'], result[n_tas]['ss']) = prob_3pw(p_tot_pw, p_tot_tfpw_y, alpha_mk)
 
-        # Compute the chi-squre to test the homogeneity between time aggregations. Since the slop is
-        # computed from VCTFPW, the homogeneity is also computed from VCTFPW.
+        # Compute the chi-squre to test the homogeneity between time aggregations. Since the slope
+        # is computed from VCTFPW, the homogeneity is also computed from VCTFPW.
         xhomo = np.nansum(z**2) - n_tas * np.nansum(z)**2
-        if xhomo <= 4.575:
-            result[n_tas]['xhomo'] = 1
-        else:
-            result[n_tas]['xhomo'] = 0
 
     # Write the yearly slope and CL
-    for item in ['slope', 'ucl', 'lcl']:
-        result[n_tas][item] = np.nanmedian([result[key][item] for key in result if key != n_tas])
-
-    result[n_tas]['median'] = np.nanmedian(np.concatenate(multi_obs_pw['vctfpw']))
-    result[n_tas]['slope_p'] = result[n_tas]['slope'] * 100./ np.abs(result[n_tas]['median'])
-    result[n_tas]['ucl_p'] = result[n_tas]['ucl'] * 100./ np.abs(result[n_tas]['median'])
-    result[n_tas]['lcl_p'] = result[n_tas]['lcl'] * 100./ np.abs(result[n_tas]['median'])
+    # xhomo has a chi-squared distribution with n-1 and 1 degree of freedom. Seasonal trends
+    # are homogeneous if xhomo is smaller than the threshold defined by the degree of freedom and
+    # the confidence level alpha_xhomo.
+    if n_tas == 1 or (xhomo <= spstats.distributions.chi2.ppf(1-alpha_xhomo/100, df=n_tas-1)):
+        for item in ['slope', 'ucl', 'lcl']:
+            result[n_tas][item] = np.nanmedian([result[key][item] for key in result
+                                                if key != n_tas])
+    else:
+        warnings.warn('The trends for the temporal aggregation are not homogenous.')
+        for item in ['slope', 'ucl', 'lcl']:
+            result[n_tas][item] = np.nan
 
     return result

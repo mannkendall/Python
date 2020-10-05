@@ -13,7 +13,7 @@ from pathlib import Path
 import numpy as np
 
 # Number of decimals to match in the assertions
-TEST_TOLERANCE = 10
+TEST_TOLERANCE = 9
 
 # Location of the test data files.
 TEST_DATA_LOC = Path(__file__).parent.absolute() / 'test_data'
