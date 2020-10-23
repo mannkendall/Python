@@ -87,7 +87,7 @@ def compute_mk_stat(obs_dts, obs, resolution, alpha_mk=95, alpha_cl=90):
     for item in [alpha_mk, alpha_cl]:
         if not isinstance(item, (int, float)):
             raise Exception('Ouch! alphas must be of type float, not: %s' %(type(item)))
-    if alpha_mk < 0 or alpha_mk >100 or alpha_cl < 0 or alpha_cl>100:
+    if alpha_mk < 0 or alpha_mk > 100 or alpha_cl < 0 or alpha_cl > 100:
         raise Exception("Ouch ! Confidence limits must be 0 <= CL <= 100.")
 
     result = {}
@@ -109,11 +109,11 @@ def compute_mk_stat(obs_dts, obs, resolution, alpha_mk=95, alpha_cl=90):
     else:
         result['ss'] = 0
 
-    (slope, slope_min, slope_max) = mks.sen_slope(obs_dts, obs, vari)
-    # Transform the slop in 1/yr. TODO: use precise year length ?
+    (slope, slope_min, slope_max) = mks.sen_slope(obs_dts, obs, vari, alpha_cl=alpha_cl)
+    # Transform the slop in 1/yr.
     result['slope'] = slope * 3600 * 24 * 365.25
-    result['ucl'] = slope_max * 3600 * 24 *365.25 # idem
-    result['lcl'] = slope_min * 3600 * 24 * 365.25 # idem
+    result['ucl'] = slope_max * 3600 * 24 *365.25
+    result['lcl'] = slope_min * 3600 * 24 * 365.25
 
     return (result, s, vari, z)
 
@@ -353,7 +353,7 @@ def mk_temp_aggr(multi_obs_dts, multi_obs, resolution, pw_method='3pw',
 
         # Compute the chi-squre to test the homogeneity between time aggregations. Since the slope
         # is computed from VCTFPW, the homogeneity is also computed from VCTFPW.
-        xhomo = np.nansum(z**2) - n_tas * np.nansum(z)**2
+        xhomo = np.nansum(z**2) - n_tas * np.nanmean(z)**2
 
     # Write the yearly slope and CL
     # xhomo has a chi-squared distribution with n-1 and 1 degree of freedom. Seasonal trends

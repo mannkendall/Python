@@ -68,7 +68,7 @@ def test_prewhite():
 
         # Load the test data
         test_in = load_test_data('prewhite_test%s_in.csv' % (test_id))
-        test_out = load_test_data('prewhite_test%s_out.csv' % (test_id), skip_header=1)
+        test_out = load_test_data('prewhite_test%s_out.csv' % (test_id))
 
         # Convert into proper datetime objects
         test_in_dts = np.array([datetime(int(item[0]), int(item[1]), int(item[2]),

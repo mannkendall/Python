@@ -69,8 +69,6 @@ def test_compute_mk_stats():
 
     """
 
-    #assert True
-
     test_params = {'1': 'default', '2': [90, 95]}
 
     # Loop through the tests
@@ -80,7 +78,7 @@ def test_compute_mk_stats():
         test_in1 = load_test_data('compute_MK_stat_test%s_in1.csv' % (test_id))
         test_in2 = load_test_data('compute_MK_stat_test%s_in2.csv' % (test_id))
         test_in3 = float(load_test_data('compute_MK_stat_test%s_in3.csv' % (test_id)))
-        test_out1 = load_test_data('compute_MK_stat_test%s_out1.csv' % (test_id), skip_header=1)
+        test_out1 = load_test_data('compute_MK_stat_test%s_out1.csv' % (test_id))
         test_out2 = load_test_data('compute_MK_stat_test%s_out2.csv' % (test_id))
         test_out3 = load_test_data('compute_MK_stat_test%s_out3.csv' % (test_id))
         test_out4 = load_test_data('compute_MK_stat_test%s_out4.csv' % (test_id))
@@ -99,16 +97,12 @@ def test_compute_mk_stats():
                                      alpha_mk=test_params[test_id][0],
                                      alpha_cl=test_params[test_id][1])
 
-        import pdb
-        pdb.set_trace()
-
         for (item_ind, item) in enumerate(['p', 'ss', 'slope', 'ucl', 'lcl']):
             assert np.round(out[0][item], TEST_TOLERANCE) == np.round(test_out1[item_ind],
                                                                                 TEST_TOLERANCE)
         assert np.round(out[1], TEST_TOLERANCE) == np.round(test_out2, TEST_TOLERANCE)
         assert np.round(out[2], TEST_TOLERANCE) == np.round(test_out3, TEST_TOLERANCE)
         assert np.round(out[3], TEST_TOLERANCE) == np.round(test_out4, TEST_TOLERANCE)
-
 
 def test_mk_temp_aggr_single():
     """ Test the mk_temp_aggr() function.
@@ -117,12 +111,12 @@ def test_mk_temp_aggr_single():
         - proper computation for a single temporal aggregation
     """
 
-    test_params = {#1: 'default',
+    test_params = {1: 'default',
                    2: [90, 95, 95, 90],
-                   #3: 'default'
-                   #4: [90, 95, 95, 90],
-                   #5: 'default',
-                   #6: [90, 95, 95, 90]
+                   3: 'default',
+                   4: [90, 95, 95, 90],
+                   5: 'default',
+                   6: [90, 95, 95, 90]
                    }
 
     # Loop throught the different tests
@@ -167,14 +161,14 @@ def test_mk_temp_aggr_single():
                                   alpha_xhomo=test_params[test_id][2],
                                   alpha_ak=test_params[test_id][3])
 
-        import pdb
-        pdb.set_trace()
-
         for tas_ind in range(0, n_tas+1, 1):
             # The matlab routine does not return the "total" results if there is only 1 time aggr.
             if (n_tas == 1) and (tas_ind > 0):
                 continue
             # Else, compare the results for all the parameters
             for (item_ind, item) in enumerate(['p', 'ss', 'slope', 'ucl', 'lcl']):
-                assert np.round(out[tas_ind][item], TEST_TOLERANCE) == \
-                       np.round(test_out[tas_ind][item_ind], TEST_TOLERANCE)
+                if np.isnan(test_out[tas_ind][item_ind]):
+                    assert np.isnan(out[tas_ind][item])
+                else:
+                    assert np.round(out[tas_ind][item], TEST_TOLERANCE) == \
+                           np.round(test_out[tas_ind][item_ind], TEST_TOLERANCE)
