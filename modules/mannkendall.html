@@ -1,0 +1,733 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mannkendall package &mdash; mannkendall (Python)  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Modules" href="../modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> mannkendall (Python)
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference external" href="https://mannkendall.github.io/">Home</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://mannkendall.github.io/about.html">Spirit of mannkendall</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running.html">Running mannkendall (Python)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledge.html">Acknowledging mannkendall (Python)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/MeteoSwiss-MDA/mannkendall/blob/develop/CONTRIBUTING.md">Contributing</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/MeteoSwiss-MDA/mannkendall">Github repository</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../modules.html">Modules</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">mannkendall package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mannkendall.mk_hardcoded">mannkendall.mk_hardcoded module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mannkendall.mk_main">mannkendall.mk_main module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mannkendall.mk_stats">mannkendall.mk_stats module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mannkendall.mk_tools">mannkendall.mk_tools module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mannkendall.mk_version">mannkendall.mk_version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mannkendall.mk_white">mannkendall.mk_white module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">mannkendall (Python)</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../modules.html">Modules</a> &raquo;</li>
+        
+      <li>mannkendall package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/modules/mannkendall.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-mannkendall">
+<span id="mannkendall-package"></span><h1>mannkendall package<a class="headerlink" href="#module-mannkendall" title="Permalink to this headline">¶</a></h1>
+<p>Copyright (c) 2020 MeteoSwiss, contributors of the original matlab version of the code listed in
+ORIGINAL_AUTHORS.
+Copyright (c) 2020 MeteoSwiss, contributors of the Python version of the code listed in AUTHORS.</p>
+<p>Distributed under the terms of the BSD 3-Clause License.</p>
+<p>SPDX-License-Identifier: BSD-3-Clause</p>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-mannkendall.mk_hardcoded">
+<span id="mannkendall-mk-hardcoded-module"></span><h2>mannkendall.mk_hardcoded module<a class="headerlink" href="#module-mannkendall.mk_hardcoded" title="Permalink to this headline">¶</a></h2>
+<p>Copyright (c) 2020 MeteoSwiss, contributors of the original matlab version of the code listed in
+ORIGINAL_AUTHORS.
+Copyright (c) 2020 MeteoSwiss, contributors of the Python version of the code listed in AUTHORS.</p>
+<p>Distributed under the terms of the BSD 3-Clause License.</p>
+<p>SPDX-License-Identifier: BSD-3-Clause</p>
+<p>This file contains the hardcoded parameters for the mannkendall package.</p>
+<dl class="py data">
+<dt id="mannkendall.mk_hardcoded.VALID_PW_METHODS">
+<code class="sig-prename descclassname">mannkendall.mk_hardcoded.</code><code class="sig-name descname">VALID_PW_METHODS</code><em class="property"> = ['pw', 'tfpw_y', 'tfpw_ws', 'vctfpw', '3pw']</em><a class="headerlink" href="#mannkendall.mk_hardcoded.VALID_PW_METHODS" title="Permalink to this definition">¶</a></dt>
+<dd><p>supported pre-whitening methods “tags”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="mannkendall.mk_hardcoded.PROB_MK_N">
+<code class="sig-prename descclassname">mannkendall.mk_hardcoded.</code><code class="sig-name descname">PROB_MK_N</code><em class="property"> = array([[     nan,      nan,      nan, 6.25e-01, 5.92e-01,      nan,              nan, 5.48e-01, 5.40e-01,      nan],        [     nan,      nan,      nan,      nan,      nan, 5.00e-01,              nan,      nan,      nan,      nan],        [     nan,      nan,      nan, 3.75e-01, 4.08e-01,      nan,              nan, 4.52e-01, 4.60e-01,      nan],        [     nan,      nan,      nan,      nan,      nan, 3.60e-01,              nan,      nan,      nan,      nan],        [     nan,      nan,      nan, 1.67e-01, 2.42e-01,      nan,              nan, 3.60e-01, 3.81e-01,      nan],        [     nan,      nan,      nan,      nan,      nan, 2.35e-01,              nan,      nan,      nan,      nan],        [     nan,      nan,      nan, 4.20e-02, 1.17e-01,      nan,              nan, 2.74e-01, 3.06e-01,      nan],        [     nan,      nan,      nan,      nan,      nan, 1.36e-01,              nan,      nan,      nan,      nan],        [     nan,      nan,      nan,      nan, 4.20e-02,      nan,              nan, 1.99e-01, 2.38e-01,      nan],        [     nan,      nan,      nan,      nan,      nan, 6.80e-02,              nan,      nan,      nan,      nan],        [     nan,      nan,      nan,      nan, 8.30e-03,      nan,              nan, 1.38e-01, 1.79e-01,      nan],        [     nan,      nan,      nan,      nan,      nan, 2.80e-02,              nan,      nan,      nan,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan, 8.90e-02, 1.30e-01,      nan],        [     nan,      nan,      nan,      nan,      nan, 8.30e-03,              nan,      nan,      nan,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan, 5.40e-02, 9.00e-02,      nan],        [     nan,      nan,      nan,      nan,      nan, 1.40e-03,              nan,      nan,      nan,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan, 3.10e-02, 6.00e-02,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan,      nan,      nan,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan, 1.60e-02, 3.80e-02,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan,      nan,      nan,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan, 7.10e-03, 2.20e-02,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan,      nan,      nan,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan, 2.80e-03, 1.20e-02,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan,      nan,      nan,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan, 8.70e-04, 6.30e-03,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan,      nan,      nan,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan, 1.90e-04, 2.90e-03,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan,      nan,      nan,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan, 2.50e-05, 1.20e-03,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan,      nan,      nan,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan,      nan, 4.30e-04,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan,      nan,      nan,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan,      nan, 1.20e-04,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan,      nan,      nan,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan,      nan, 2.50e-05,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan,      nan,      nan,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan,      nan, 2.80e-06,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan,      nan,      nan,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan,      nan,      nan,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan,      nan,      nan,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan,      nan,      nan,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan,      nan,      nan,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan,      nan,      nan,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan,      nan,      nan,      nan],        [     nan,      nan,      nan,      nan,      nan,      nan,              nan,      nan,      nan,      nan]])</em><a class="headerlink" href="#mannkendall.mk_hardcoded.PROB_MK_N" title="Permalink to this definition">¶</a></dt>
+<dd><p>MannKendall probability array</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mannkendall.mk_main">
+<span id="mannkendall-mk-main-module"></span><h2>mannkendall.mk_main module<a class="headerlink" href="#module-mannkendall.mk_main" title="Permalink to this headline">¶</a></h2>
+<p>Copyright (c) 2020 MeteoSwiss, contributors of the original matlab version of the code listed in
+ORIGINAL_AUTHORS.
+Copyright (c) 2020 MeteoSwiss, contributors of the Python version of the code listed in AUTHORS.</p>
+<p>Distributed under the terms of the BSD 3-Clause License.</p>
+<p>SPDX-License-Identifier: BSD-3-Clause</p>
+<p>This file contains the core routines for the mannkendall package.</p>
+<dl class="py function">
+<dt id="mannkendall.mk_main.prob_3pw">
+<code class="sig-prename descclassname">mannkendall.mk_main.</code><code class="sig-name descname">prob_3pw</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_pw</span></em>, <em class="sig-param"><span class="n">p_tfpw_y</span></em>, <em class="sig-param"><span class="n">alpha_mk</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mannkendall.mk_main.prob_3pw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimate the probability of the MK test and its statistical significance.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Estimates the probability of the MK test with the 3PW method. To have the maximal
+certainty, P is taken as the maximum of P_PW and P_TFPW_Y.</p></li>
+<li><p>Estimates the statistical significance of the MK test as a function of the given
+confidence level alpha_MK.</p></li>
+</ol>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p_pw</strong> (<em>float</em>) – probability computed from the PW prewhitened dataset</p></li>
+<li><p><strong>p_tfpw_y</strong> (<em>float</em>) – probability computed from the TFPW_Y prewhitened dataset</p></li>
+<li><p><strong>alpha_mk</strong> (<em>float</em>) – confidence level in % for the MK test.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>(float, int)</em> – P, ss</p>
+</dd>
+</dl>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<ul class="simple">
+<li><p>improve this docstring</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mannkendall.mk_main.compute_mk_stat">
+<code class="sig-prename descclassname">mannkendall.mk_main.</code><code class="sig-name descname">compute_mk_stat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obs_dts</span></em>, <em class="sig-param"><span class="n">obs</span></em>, <em class="sig-param"><span class="n">resolution</span></em>, <em class="sig-param"><span class="n">alpha_mk</span><span class="o">=</span><span class="default_value">95</span></em>, <em class="sig-param"><span class="n">alpha_cl</span><span class="o">=</span><span class="default_value">90</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mannkendall.mk_main.compute_mk_stat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute all the components for the MK statistics.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obs_dts</strong> (<em>ndarray of datetime.datetime</em>) – a list of observation datetimes.</p></li>
+<li><p><strong>obs</strong> (<em>ndarray of floats</em>) – the data array. Must be 1-D.</p></li>
+<li><p><strong>resolution</strong> (<em>float</em>) – delta value below which two measurements are considered equivalent.</p></li>
+<li><p><strong>alpha_mk</strong> (<em>float, optional</em>) – confidence level for the Mann-Kendall test in %. Defaults to 95.</p></li>
+<li><p><strong>alpha_cl</strong> (<em>float, optional</em>) – confidence level for the Sen’s slope in %. Defaults to 90.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>(dict, int, float, float)</em> – result, s, vari, z</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mannkendall.mk_main.mk_temp_aggr">
+<code class="sig-prename descclassname">mannkendall.mk_main.</code><code class="sig-name descname">mk_temp_aggr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">multi_obs_dts</span></em>, <em class="sig-param"><span class="n">multi_obs</span></em>, <em class="sig-param"><span class="n">resolution</span></em>, <em class="sig-param"><span class="n">pw_method</span><span class="o">=</span><span class="default_value">'3pw'</span></em>, <em class="sig-param"><span class="n">alpha_mk</span><span class="o">=</span><span class="default_value">95</span></em>, <em class="sig-param"><span class="n">alpha_cl</span><span class="o">=</span><span class="default_value">90</span></em>, <em class="sig-param"><span class="n">alpha_xhomo</span><span class="o">=</span><span class="default_value">90</span></em>, <em class="sig-param"><span class="n">alpha_ak</span><span class="o">=</span><span class="default_value">95</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mannkendall.mk_main.mk_temp_aggr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies the Mann-Kendall test and the Sen slope on the given time granularity for a data set
+split into different temporal aggregations.</p>
+<p>Five prewhitening methods can be chosen:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>3PW (Collaud Coen et al., 2020): 3 prewhitening methods are applied (PW and TFPW_Y to
+determine the statistic significance (ss) of the MK test and the VCTFPW method to compute
+the Sen’s slope.</p></li>
+<li><p>PW (prewhitened, Kulkarni and von Storch, 1995)</p></li>
+<li><p>TFPW_Y(trend free PW,Yue et al., 2001)</p></li>
+<li><p>TFPW_WS (trend free PW, Wang and Swail, 2001)</p></li>
+<li><p>VCTFPW (variance corrected trend free PW, Wang et al., 2015)</p></li>
+</ul>
+</div></blockquote>
+<p>For the PW,only ss autocorrelation are taken into account.
+The default ss for the MK test is taken at 95% confidence limit.
+The default ss for upper and lower confidence limits is 90% of the all intervals differences
+distribution.</p>
+<p>The default ss for the autocorrelation coefficient is 95%.
+The default ss for the homogeneity test between temporal aggregation of the MK test is 90%.
+If seasonal Mann-Kendall is applied, the yearly trend is assigned only if the results of the
+seasonal test are homogeneous. The default ss for the homogeneity test between temporal
+aggregation of the seasonal MK test is 90%.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>multi_obs_dts</strong> (<em>list of 1-D ndarray of datetime.datime</em>) – the observation times. Each array
+defines a new season.</p></li>
+<li><p><strong>multi_obs</strong> (<em>list of 1-D ndarray</em>) – the observations. Each array defines a new season.</p></li>
+<li><p><strong>resolution</strong> (<em>float</em>) – interval to determine the number of ties. It should be similar to the
+resolution of the instrument.</p></li>
+<li><p><strong>pw_method</strong> (<em>str</em>) – must be one of [‘3pw’, ‘pw, ‘tfpw_y’, ‘tfpw_ws’, ‘vctfpw’].
+Defaults to ‘3pw’.</p></li>
+<li><p><strong>alpha_mk</strong> (<em>float, optional</em>) – confidence limit for Mk test in %. Defaults to 95.</p></li>
+<li><p><strong>alpha_cl</strong> (<em>float, optional</em>) – confidence limit for the Sen’s slope in %. Defaults to 90.</p></li>
+<li><p><strong>alpha_xhomo</strong> (<em>float, optional</em>) – confidence limit for the homogeneity between seasons in %.
+Defaults to 90.</p></li>
+<li><p><strong>alpha_ak</strong> (<em>float, optional</em>) – confidence limit for the first lag autocorrelation in %.
+Defaults to 95.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>dict</em> –</p>
+<p>comprises the following fields</p>
+<blockquote>
+<div><ul>
+<li><p>’p’ (float): probability for the statistical significance. If 3PW is applied,
+P= max(P_PW, P_TFPW_Y);</p></li>
+<li><p>’ss’ (float): statistical significance:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>alpha_MK if the test is ss at the alpha confidence level. Defaults to 95.</p></li>
+<li><p>0 if the test is not ss at the alpha_MK confidence level.</p></li>
+<li><p>-1 if the test is a TFPW_Y false positive at alpha_MK confidence level</p></li>
+<li><p>-2 if the test is a PW false positive at alpha_MK confidence level</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>’slope’ (float): Sen’s slope in units/y</p></li>
+<li><p>’ucl’ (float): upper confidence level in units/y</p></li>
+<li><p>’lcl’ (float): lower confidence level in units/y</p></li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Sources</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Collaud Coen et al., Effects of the prewhitening method, the time granularity and the
+time segmentation on the Mann-Kendall trend detection and the associated Sen’s slope,
+Atmos. Meas. Tech. Discuss, <a class="reference external" href="https://doi.org/10.5194/amt-2020-178">https://doi.org/10.5194/amt-2020-178</a>, 2020.</p></li>
+<li><p>Sirois, A.: A brief and biased overview of time-series analysis of how to find that
+evasive trend, WMO/EMEP Workshop on Advanced Statistical Methods and Their Application
+to Air Quality Data Sets, Annex E., Global Atmosphere Watch No. 133, TD- No. 956,
+World Meteorological Organization, Geneva, Switzerland, 1998. annexe E, p. 26.</p></li>
+<li><p>Gilbert, R.: Statistical Methods for Environmental Pollution Monitoring, Van Nostrand
+Reinhold Company, New York, 1987.</p></li>
+<li><p>The explanations about MULTMK/PARTMK de C. Libiseller.</p></li>
+</ul>
+</div></blockquote>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mannkendall.mk_stats">
+<span id="mannkendall-mk-stats-module"></span><h2>mannkendall.mk_stats module<a class="headerlink" href="#module-mannkendall.mk_stats" title="Permalink to this headline">¶</a></h2>
+<p>Copyright (c) 2020 MeteoSwiss, contributors of the original matlab version of the code listed in
+ORIGINAL_AUTHORS.
+Copyright (c) 2020 MeteoSwiss, contributors of the Python version of the code listed in AUTHORS.</p>
+<p>Distributed under the terms of the BSD 3-Clause License.</p>
+<p>SPDX-License-Identifier: BSD-3-Clause</p>
+<p>This file contains the core statistical routines for the package.</p>
+<dl class="py function">
+<dt id="mannkendall.mk_stats.std_normal_var">
+<code class="sig-prename descclassname">mannkendall.mk_stats.</code><code class="sig-name descname">std_normal_var</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span></em>, <em class="sig-param"><span class="n">var_s</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mannkendall.mk_stats.std_normal_var" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the normal standard variable Z.</p>
+<p>From Gilbert (1987).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>s</strong> (<em>int</em>) – S statistics of the Mann-Kendall test computed from the S_test.</p></li>
+<li><p><strong>k_var</strong> (<em>float</em>) – variance of the time series taking into account the ties in values and time.
+It should be computed by Kendall_var().</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>float</em> – S statistic weighted by the variance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mannkendall.mk_stats.sen_slope">
+<code class="sig-prename descclassname">mannkendall.mk_stats.</code><code class="sig-name descname">sen_slope</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obs_dts</span></em>, <em class="sig-param"><span class="n">obs</span></em>, <em class="sig-param"><span class="n">k_var</span></em>, <em class="sig-param"><span class="n">alpha_cl</span><span class="o">=</span><span class="default_value">90.0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mannkendall.mk_stats.sen_slope" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute Sen’s slope.</p>
+<p>Specifically, this computes the median of the slopes for each interval:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">xj</span><span class="o">-</span><span class="n">xi</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="p">),</span> <span class="n">j</span><span class="o">&gt;</span><span class="n">i</span>
+</pre></div>
+</div>
+<p>The confidence limits are computed with an interpolation that is important if the number of data
+point is small, such as for yearly averages for a 10 year trend.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obs_dts</strong> (<em>ndarray of datetime.datetime</em>) – an array of observation times. Must be 1-D.</p></li>
+<li><p><strong>obs</strong> (<em>ndarray of floats</em>) – the data array. Must be 1-D.</p></li>
+<li><p><strong>k_var</strong> (<em>float</em>) – Kendall variance, computed with Kendall_var.</p></li>
+<li><p><strong>confidence</strong> (<em>float, optional</em>) – the desired confidence limit, in %. Defaults to 90.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>(float, float, float)</em> – Sen’s slope, lower confidence limit, upper confidence limit.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The slopes are returned in units of 1/s.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mannkendall.mk_stats.s_test">
+<code class="sig-prename descclassname">mannkendall.mk_stats.</code><code class="sig-name descname">s_test</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obs</span></em>, <em class="sig-param"><span class="n">obs_dts</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mannkendall.mk_stats.s_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the S statistics (Si) for the Mann-Kendall test.</p>
+<p>From Gilbert (1987).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obs</strong> (<em>ndarray of floats</em>) – the observations array. Must be 1-D.</p></li>
+<li><p><strong>obs_dts</strong> (<em>ndarray of datetime.datetime</em>) – a list of observation datetimes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>(float, ndarray)</em> –</p>
+<dl class="simple">
+<dt>S, n.</dt><dd><p>S (float) = double sum on the sign of the difference between data pairs
+(Si).
+n (ndarray of int) = number of valid data in each year of the time series</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mannkendall.mk_tools">
+<span id="mannkendall-mk-tools-module"></span><h2>mannkendall.mk_tools module<a class="headerlink" href="#module-mannkendall.mk_tools" title="Permalink to this headline">¶</a></h2>
+<p>Copyright (c) 2020 MeteoSwiss, contributors of the original matlab version of the code listed in
+ORIGINAL_AUTHORS.
+Copyright (c) 2020 MeteoSwiss, contributors of the Python version of the code listed in AUTHORS.</p>
+<p>Distributed under the terms of the BSD 3-Clause License.</p>
+<p>SPDX-License-Identifier: BSD-3-Clause</p>
+<p>This file contains useful tools for the package.</p>
+<dl class="py function">
+<dt id="mannkendall.mk_tools.de_sort">
+<code class="sig-prename descclassname">mannkendall.mk_tools.</code><code class="sig-name descname">de_sort</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">vals</span></em>, <em class="sig-param"><span class="n">inds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mannkendall.mk_tools.de_sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>De-sort an array of values vals that were sorted according to the indices inds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vals</strong> (<em>ndarray</em>) – a 1-D array to de-sort.</p></li>
+<li><p><strong>inds</strong> (<em>ndarray of int</em>) – the sorting indices.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>ndarray</em> – the de-sorted array.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mannkendall.mk_tools.dt_to_s">
+<code class="sig-prename descclassname">mannkendall.mk_tools.</code><code class="sig-name descname">dt_to_s</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_deltas</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mannkendall.mk_tools.dt_to_s" title="Permalink to this definition">¶</a></dt>
+<dd><p>A convenience function that converts an array of datetime.timedeltas into an array of
+floats corresponding to the total_seconds() of each elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>time_deltas</strong> (<em>ndarray of datetime.timedelta</em>) – array of timedeltas.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>ndaray of flot</em> – the same array with all elements converted to total_seconds().</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Adapted from <a class="reference external" href="https://stackoverflow.com/questions/19039080/elegant-way-of-convert-a-numpy-array-containing-datetime-timedelta-into-seconds">SO</a>.
+Reply by prgao.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mannkendall.mk_tools.nb_tie">
+<code class="sig-prename descclassname">mannkendall.mk_tools.</code><code class="sig-name descname">nb_tie</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">resolution</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mannkendall.mk_tools.nb_tie" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the number of data point considered to be equivalent (and to be treated as “ties”).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>ndarray of floats</em>) – the data array. Must be 1-D.</p></li>
+<li><p><strong>resolution</strong> (<em>float</em>) – delta value below which two measurements are considered equivalent.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>ndarray of int</em> – amount of ties in the data.</p>
+</dd>
+</dl>
+<div class="admonition-todo admonition" id="id2">
+<p class="admonition-title">Todo</p>
+<ul class="simple">
+<li><p>adjust docstring to better describe the function.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mannkendall.mk_tools.kendall_var">
+<code class="sig-prename descclassname">mannkendall.mk_tools.</code><code class="sig-name descname">kendall_var</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">n</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mannkendall.mk_tools.kendall_var" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the variance with ties in the data and ties in time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>ndarray of floats</em>) – the data array. Must be 1-D.</p></li>
+<li><p><strong>t</strong> (<em>ndarray of int</em>) – number of elements in each tie. Must be 1-D.</p></li>
+<li><p><strong>n</strong> (<em>ndarray of int</em>) – number of non-missing data for each year. Must be 1-D.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>float</em> – the variance.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Source: Eq. 4.20, GAW report 133 (A. Sirois), p.30 of annex D.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mannkendall.mk_tools.nanautocorr">
+<code class="sig-prename descclassname">mannkendall.mk_tools.</code><code class="sig-name descname">nanautocorr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obs</span></em>, <em class="sig-param"><span class="n">nlags</span></em>, <em class="sig-param"><span class="n">r</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mannkendall.mk_tools.nanautocorr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the Pearson R autocoreelation coefficient for an array that contains nans.</p>
+<p>Also compute the confidence bounds b following Bartlett’s formula.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obs</strong> (<em>ndarray of float</em>) – the data array. Must be 1-D.</p></li>
+<li><p><strong>nlags</strong> (<em>int</em>) – number of lags to compute.</p></li>
+<li><p><strong>r</strong> (<em>int, optional</em>) – number of lags until the model is supposed to have a significant
+autocorrelation coefficient. Must be &lt; nlags. Defaults to 0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>(ndarray, float)</em> – the autocorrelation coefficients, and the confidence bounds b.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Adapted from Fabio (2020), Autocorrelation and Partial Autocorrelation with NaNs,
+<a class="reference external" href="https://www.mathworks.com/matlabcentral/fileexchange/43840-autocorrelation-and-partial-autocorrelation-with-nans">https://www.mathworks.com/matlabcentral/fileexchange/43840-autocorrelation-and-partial-autocorrelation-with-nans</a>,
+MATLAB Central File Exchange. Retrieved August 26, 2020.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mannkendall.mk_tools.levinson">
+<code class="sig-prename descclassname">mannkendall.mk_tools.</code><code class="sig-name descname">levinson</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">n</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mannkendall.mk_tools.levinson" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adapts the levinson() routine from matlab.</p>
+<p>Basically re-arranges the outputs from statsmodels.tsa.stattools.levinson_durbin() to match
+the matlab outputs. Includes a sign change and swapping a “1”.</p>
+<p>For more info, see <a class="reference external" href="https://ch.mathworks.com/help/signal/ref/levinson.html?s_tid=srchtitle">https://ch.mathworks.com/help/signal/ref/levinson.html?s_tid=srchtitle</a>.</p>
+<div class="admonition-todo admonition" id="id3">
+<p class="admonition-title">Todo</p>
+<ul class="simple">
+<li><p>fix this docstring</p></li>
+</ul>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mannkendall.mk_version">
+<span id="mannkendall-mk-version-module"></span><h2>mannkendall.mk_version module<a class="headerlink" href="#module-mannkendall.mk_version" title="Permalink to this headline">¶</a></h2>
+<p>Copyright (c) 2020 MeteoSwiss, contributors of the original matlab version of the code listed in
+ORIGINAL_AUTHORS.
+Copyright (c) 2020 MeteoSwiss, contributors of the Python version of the code listed in AUTHORS.</p>
+<p>Distributed under the terms of the BSD 3-Clause License.</p>
+<p>SPDX-License-Identifier: BSD-3-Clause</p>
+<p>This file contains the version of the code. It is used by the code itself, as well as setup.py.</p>
+</div>
+<div class="section" id="module-mannkendall.mk_white">
+<span id="mannkendall-mk-white-module"></span><h2>mannkendall.mk_white module<a class="headerlink" href="#module-mannkendall.mk_white" title="Permalink to this headline">¶</a></h2>
+<p>Copyright (c) 2020 MeteoSwiss, contributors of the original matlab version of the code listed in
+ORIGINAL_AUTHORS.
+Copyright (c) 2020 MeteoSwiss, contributors of the Python version of the code listed in AUTHORS.</p>
+<p>Distributed under the terms of the BSD 3-Clause License.</p>
+<p>SPDX-License-Identifier: BSD-3-Clause</p>
+<p>This file contains the different pre-whiteneing routines for the mannkendall package.</p>
+<dl class="py function">
+<dt id="mannkendall.mk_white.nanprewhite_arok">
+<code class="sig-prename descclassname">mannkendall.mk_white.</code><code class="sig-name descname">nanprewhite_arok</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obs</span></em>, <em class="sig-param"><span class="n">alpha_ak</span><span class="o">=</span><span class="default_value">95</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mannkendall.mk_white.nanprewhite_arok" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the first lag autocorrelation coefficient to prewhite data as an AR(Kmax) function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obs</strong> (<em>ndarray of floats</em>) – the data array. Must be 1-D.</p></li>
+<li><p><strong>alpha_ak</strong> (<em>float</em>) – confidence level for the first lag autocorrelation in %. Defaults to 95.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>(float, ndarray, int)</em> –</p>
+<dl class="simple">
+<dt>ak_lag, data_prewhite, ak_ss.</dt><dd><p>ak_lag (float): first lag autocorrelation coefficient.
+data_prewhite (ndarray): data after removing of the first lag
+autorcorrelation if ak_lag is ss, original data otherwise.
+ak_ss (int): statistical significance of the first lag
+autocorrelation. alpha_ak is ss at the alpha_ak level, zero otherwise</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<div class="admonition-todo admonition" id="id4">
+<p class="admonition-title">Todo</p>
+<ul class="simple">
+<li><p>fix the docstring</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mannkendall.mk_white.prewhite">
+<code class="sig-prename descclassname">mannkendall.mk_white.</code><code class="sig-name descname">prewhite</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obs</span></em>, <em class="sig-param"><span class="n">obs_dts</span></em>, <em class="sig-param"><span class="n">resolution</span></em>, <em class="sig-param"><span class="n">alpha_ak</span><span class="o">=</span><span class="default_value">95</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mannkendall.mk_white.prewhite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the necessary prewhitened datasets to assess the statistical significance, and to
+compute the Sen slope for each of the prewhitening method, including 3PW.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obs</strong> (<em>ndarray of floats</em>) – the data array. Must be 1-D.</p></li>
+<li><p><strong>obs_dts</strong> (<em>ndarray of datetime.datetime</em>) – a list of observation datetimes.</p></li>
+<li><p><strong>resolution</strong> (<em>float</em>) – delta value below which two measurements are considered equivalent.
+It is used to compute the number of ties.</p></li>
+<li><p><strong>alpha_ak</strong> (<em>float, optional</em>) – statistical significance in % for the first lag autocorrelation.
+Defaults to 95.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>(dict)</em> –</p>
+<dl class="simple">
+<dt>data_pw, that contains 5 PW timeseries:</dt><dd><ul class="simple">
+<li><p>’pw’: PW with the first lag autocorrelation of the data</p></li>
+<li><p>’pw_cor’: PW corrected with 1/(1-ak1)</p></li>
+<li><dl class="simple">
+<dt>’tfpw_ws’: PW with the first lag autocorrelation of the data after detrending</dt><dd><p>computed from PW data (see Wang &amp; Swail)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>’tfpw_y’: method of Yue et al 2002, not 1/1-ak1) correction, detrend on original</dt><dd><p>data</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>’vctfpw’: PW with the first lag autocorrelation of the data after detrending +</dt><dd><p>correction of the PW data for the variance (see Wang 2015)</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<div class="admonition-todo admonition" id="id5">
+<p class="admonition-title">Todo</p>
+<ul class="simple">
+<li><p>fix this docstring</p></li>
+</ul>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="../modules.html" class="btn btn-neutral float-left" title="Modules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, MeteoSwiss.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

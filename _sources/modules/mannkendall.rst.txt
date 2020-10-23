@@ -1,0 +1,58 @@
+mannkendall package
+===================
+
+.. automodule:: mannkendall
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+mannkendall.mk\_hardcoded module
+--------------------------------
+
+.. automodule:: mannkendall.mk_hardcoded
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+mannkendall.mk\_main module
+---------------------------
+
+.. automodule:: mannkendall.mk_main
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+mannkendall.mk\_stats module
+----------------------------
+
+.. automodule:: mannkendall.mk_stats
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+mannkendall.mk\_tools module
+----------------------------
+
+.. automodule:: mannkendall.mk_tools
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+mannkendall.mk\_version module
+------------------------------
+
+.. automodule:: mannkendall.mk_version
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+mannkendall.mk\_white module
+----------------------------
+
+.. automodule:: mannkendall.mk_white
+   :members:
+   :undoc-members:
+   :show-inheritance:
