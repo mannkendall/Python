@@ -26,11 +26,10 @@ from . import mk_white as mkw
 def prob_3pw(p_pw, p_tfpw_y, alpha_mk):
     """ Estimate the probability of the MK test and its statistical significance.
 
-    1) Estimates the probability of the MK test with the 3PW method. To have the maximal certainty,
-    P is taken as the maximum of P_PW and P_TFPW_Y.
-
-    2) Estimates the statistical significance of the MK test as a function of the given confidence
-    level alpha_MK
+        1) Estimates the probability of the MK test with the 3PW method. To have the maximal
+           certainty, P is taken as the maximum of P_PW and P_TFPW_Y.
+        2) Estimates the statistical significance of the MK test as a function of the given
+           confidence level alpha_MK.
 
     Args:
         p_pw (float): probability computed from the PW prewhitened dataset
@@ -123,9 +122,10 @@ def mk_temp_aggr(multi_obs_dts, multi_obs, resolution, pw_method='3pw',
     split into different temporal aggregations.
 
     Five prewhitening methods can be chosen:
+
         * 3PW (Collaud Coen et al., 2020): 3 prewhitening methods are applied (PW and TFPW_Y to
-        determine the statistic significance (ss) of the MK test and the VCTFPW method to compute
-        the Sen's slope.
+          determine the statistic significance (ss) of the MK test and the VCTFPW method to compute
+          the Sen's slope.
         * PW (prewhitened, Kulkarni and von Storch, 1995)
         * TFPW_Y(trend free PW,Yue et al., 2001)
         * TFPW_WS (trend free PW, Wang and Swail, 2001)
@@ -135,6 +135,7 @@ def mk_temp_aggr(multi_obs_dts, multi_obs, resolution, pw_method='3pw',
     The default ss for the MK test is taken at 95% confidence limit.
     The default ss for upper and lower confidence limits is 90% of the all intervals differences
     distribution.
+
     The default ss for the autocorrelation coefficient is 95%.
     The default ss for the homogeneity test between temporal aggregation of the MK test is 90%.
     If seasonal Mann-Kendall is applied, the yearly trend is assigned only if the results of the
@@ -159,28 +160,31 @@ def mk_temp_aggr(multi_obs_dts, multi_obs, resolution, pw_method='3pw',
 
     Returns:
         dict: comprises the following fields
-            'p' (float): probability for the statistical significance. If 3PW is applied,
-                         P= max(P_PW, P_TFPW_Y);
-            'ss' (float): statistical significance:
-                          alpha_MK if the test is ss at the alpha confidence level. Defaults to 95.
-                          0 if the test is not ss at the alpha_MK confidence level.
-                          -1 if the test is a TFPW_Y false positive at alpha_MK confidence level
-                          -2 if the test is a PW false positive at alpha_MK confidence level
-            'slope' (float): Sen's slope in units/y
-            'ucl' (float): upper confidence level in units/y
-            'lcl' (float): lower confidence level in units/y
+
+            * 'p' (float): probability for the statistical significance. If 3PW is applied,
+              P= max(P_PW, P_TFPW_Y);
+            * 'ss' (float): statistical significance:
+
+                - alpha_MK if the test is ss at the alpha confidence level. Defaults to 95.
+                - 0 if the test is not ss at the alpha_MK confidence level.
+                - -1 if the test is a TFPW_Y false positive at alpha_MK confidence level
+                - -2 if the test is a PW false positive at alpha_MK confidence level
+            * 'slope' (float): Sen's slope in units/y
+            * 'ucl' (float): upper confidence level in units/y
+            * 'lcl' (float): lower confidence level in units/y
 
     Note:
-        Sources:
+        Sources
+
             * Collaud Coen et al., Effects of the prewhitening method, the time granularity and the
-            time segmentation on the Mann-Kendall trend detection and the associated Sen's slope,
-            Atmos. Meas. Tech. Discuss, https://doi.org/10.5194/amt-2020-178, 2020.
+              time segmentation on the Mann-Kendall trend detection and the associated Sen's slope,
+              Atmos. Meas. Tech. Discuss, https://doi.org/10.5194/amt-2020-178, 2020.
             * Sirois, A.: A brief and biased overview of time-series analysis of how to find that
-            evasive trend, WMO/EMEP Workshop on Advanced Statistical Methods and Their Application
-            to Air Quality Data Sets, Annex E., Global Atmosphere Watch No. 133, TD- No. 956, World
-            Meteorological Organization, Geneva, Switzerland, 1998. annexe E, p. 26.
+              evasive trend, WMO/EMEP Workshop on Advanced Statistical Methods and Their Application
+              to Air Quality Data Sets, Annex E., Global Atmosphere Watch No. 133, TD- No. 956,
+              World Meteorological Organization, Geneva, Switzerland, 1998. annexe E, p. 26.
             * Gilbert, R.: Statistical Methods for Environmental Pollution Monitoring, Van Nostrand
-            Reinhold Company, New York, 1987.
+              Reinhold Company, New York, 1987.
             * The explanations about MULTMK/PARTMK de C. Libiseller.
 
     """
