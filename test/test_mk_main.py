@@ -99,7 +99,7 @@ def test_compute_mk_stats():
 
         for (item_ind, item) in enumerate(['p', 'ss', 'slope', 'ucl', 'lcl']):
             assert np.round(out[0][item], TEST_TOLERANCE) == np.round(test_out1[item_ind],
-                                                                                TEST_TOLERANCE)
+                                                                      TEST_TOLERANCE)
         assert np.round(out[1], TEST_TOLERANCE) == np.round(test_out2, TEST_TOLERANCE)
         assert np.round(out[2], TEST_TOLERANCE) == np.round(test_out3, TEST_TOLERANCE)
         assert np.round(out[3], TEST_TOLERANCE) == np.round(test_out4, TEST_TOLERANCE)

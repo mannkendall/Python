@@ -303,7 +303,6 @@ def mk_temp_aggr(multi_obs_dts, multi_obs, resolution, pw_method='3pw',
 
 
     # Now let's look at the sum of all the time aggregations.
-    # TODO: simplify (by function grouping) the following two if clauses
     result[n_tas] = {}
     #result[n_tas]['ak'] = ak
 

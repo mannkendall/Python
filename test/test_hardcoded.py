@@ -19,11 +19,11 @@ TEST_TOLERANCE = 9
 TEST_DATA_LOC = Path(__file__).parent.absolute() / 'test_data'
 
 # A function to load the data, to save me the trouble of writing it all the time
-def load_test_data(fn, loc=TEST_DATA_LOC, missing_values='NaN', delimiter=',', skip_header=1):
+def load_test_data(f_name, loc=TEST_DATA_LOC, missing_values='NaN', delimiter=',', skip_header=1):
     """ Loads a specific test data set in memory.
 
     Args:
-        fn (str): filename
+        f_name (str): filename
         loc (pathlib.Path, optional): the location of the test data. Defaults to TEST_DATA_LOC.
         missing_values (str, optional): string corresponding to missing values. Defaults to 'NaN'.
         delimiter (str, optional): str for separating entries. Defaults to ','.
@@ -33,7 +33,7 @@ def load_test_data(fn, loc=TEST_DATA_LOC, missing_values='NaN', delimiter=',', s
         ndarray: the test data
 
     """
-    test_data = np.genfromtxt(loc / fn,
+    test_data = np.genfromtxt(loc / f_name,
                               skip_header=skip_header, delimiter=delimiter,
                               missing_values=missing_values, filling_values=np.nan)
 

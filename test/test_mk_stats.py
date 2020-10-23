@@ -10,7 +10,6 @@ This file contains test functions for the mk_stats module.
 """
 
 # Import from python packages
-from pathlib import Path
 from datetime import datetime
 import numpy as np
 
