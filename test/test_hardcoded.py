@@ -19,7 +19,7 @@ TEST_TOLERANCE = 9
 TEST_DATA_LOC = Path(__file__).parent.absolute() / 'test_data'
 
 # A function to load the data, to save me the trouble of writing it all the time
-def load_test_data(fn, loc=TEST_DATA_LOC, missing_values='NaN', delimiter=',', skip_header=0):
+def load_test_data(fn, loc=TEST_DATA_LOC, missing_values='NaN', delimiter=',', skip_header=1):
     """ Loads a specific test data set in memory.
 
     Args:
