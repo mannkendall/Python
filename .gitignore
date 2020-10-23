@@ -1,5 +1,6 @@
 # MacOS stuff
 *.DS_Store
 
+
 # Sphinx documentation
 build/
