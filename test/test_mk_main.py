@@ -69,8 +69,8 @@ def test_compute_mk_stats():
 
     """
 
-    assert True
-    """
+    #assert True
+
     test_params = {'1': 'default', '2': [90, 95]}
 
     # Loop through the tests
@@ -99,13 +99,16 @@ def test_compute_mk_stats():
                                      alpha_mk=test_params[test_id][0],
                                      alpha_cl=test_params[test_id][1])
 
+        import pdb
+        pdb.set_trace()
+
         for (item_ind, item) in enumerate(['p', 'ss', 'slope', 'ucl', 'lcl']):
             assert np.round(out[0][item], TEST_TOLERANCE) == np.round(test_out1[item_ind],
                                                                                 TEST_TOLERANCE)
         assert np.round(out[1], TEST_TOLERANCE) == np.round(test_out2, TEST_TOLERANCE)
         assert np.round(out[2], TEST_TOLERANCE) == np.round(test_out3, TEST_TOLERANCE)
         assert np.round(out[3], TEST_TOLERANCE) == np.round(test_out4, TEST_TOLERANCE)
-        """
+
 
 def test_mk_temp_aggr_single():
     """ Test the mk_temp_aggr() function.
@@ -114,35 +117,45 @@ def test_mk_temp_aggr_single():
         - proper computation for a single temporal aggregation
     """
 
-    test_params = {#1: 'default', #2: [90, 90, 95, 95],
-                   3: 'default'}
+    test_params = {#1: 'default',
+                   2: [90, 95, 95, 90],
+                   #3: 'default'
+                   #4: [90, 95, 95, 90],
+                   #5: 'default',
+                   #6: [90, 95, 95, 90]
+                   }
 
     # Loop throught the different tests
     for test_id in test_params:
 
         # load the data
-        test_in = load_test_data('MK_tempAggr_test%i_in.csv' % (np.ceil(test_id/2)),
-                                 skip_header=1)
+        test_in = load_test_data('MK_tempAggr_test%i_in.csv' % (np.ceil(test_id/2)))
         if (test_id % 2) == 0:
-            test_out = load_test_data('MK_tempAggr_test%i_out_CL.csv' % (np.ceil(test_id/2)),
-                                      skip_header=1)
+            test_out = load_test_data('MK_tempAggr_test%i_out_CL.csv' % (np.ceil(test_id/2)))
         else:
-            test_out = load_test_data('MK_tempAggr_test%i_out_default.csv' % (np.ceil(test_id/2)),
-                                      skip_header=1)
+            test_out = load_test_data('MK_tempAggr_test%i_out_default.csv' % (np.ceil(test_id/2)))
+
+        # For consistency, make sure the output is always 2-dimensional
+        if np.ndim(test_out) == 1:
+            test_out = np.array([test_out])
 
         # How many "seasons" do I have ?
-        import pdb
-        pdb.set_trace()
         n_tas = np.shape(test_in)[1] // 7
 
         # Restructure the input to feed the functions
         # Get the proper datetime
+        # Pay attention to the fact that not all seasons have the same number of entries ...
+        # Some rowas have NaN as datetimes to fill the gaps in the CSV files. Deal with it.
         test_in_dts = [np.array([datetime(int(item[0]), int(item[1]), int(item[2]),
                                           int(item[3]), int(item[4]), int(item[5]))
-                                 for item in test_in[:, tas_ind:tas_ind+6]])
-                       for tas_ind in range(0, n_tas, 1)]
+                                 for item in test_in[:, tas_ind:tas_ind+7]
+                                 if not np.isnan(item[0])])
+                       for tas_ind in range(0, n_tas*7, 7)]
+
         # Idem for the observations
-        test_in_obs = [test_in[:, 6*(tas_ind+1)] for tas_ind in range(0, n_tas, 1)]
+        test_in_obs = [np.array([item[6] for item in test_in[:, tas_ind:tas_ind+7]
+                                 if not np.isnan(item[0])])
+                       for tas_ind in range(0, n_tas*7, 7)]
 
         # Run the function
         if test_params[test_id] == 'default':
@@ -163,5 +176,5 @@ def test_mk_temp_aggr_single():
                 continue
             # Else, compare the results for all the parameters
             for (item_ind, item) in enumerate(['p', 'ss', 'slope', 'ucl', 'lcl']):
-                assert np.round(out[1][item], TEST_TOLERANCE) == \
-                       np.round(test_out[item_ind], TEST_TOLERANCE)
+                assert np.round(out[tas_ind][item], TEST_TOLERANCE) == \
+                       np.round(test_out[tas_ind][item_ind], TEST_TOLERANCE)
