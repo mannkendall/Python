@@ -1,0 +1,8 @@
+To generate the HTML files of the mannkendall docs from the source, 
+type the following in a terminal:
+
+cd <mannkendall path>/docs
+sh build_docs.sh
+
+This will create all the pages in a new build folder. Note that this requires both the sphinx and sphinx_rtd_theme to be installed.
+

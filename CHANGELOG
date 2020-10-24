@@ -6,11 +6,15 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 ### Added:
-- [fpavogt, 2020.08.21] Create Github repofor mannkendall.
-### Changed:
+- [fpavogt, 2020.10.23] Complete set of tests, readying for first release.
+- [fpavogt, 2020.09.16] Setup docs, incl. dedicated CI validation.
+- [fpavogt, 2020.08.26] Addition of mk_stats, incl. dedicated tests.
+- [fpavogt, 2020.08.25] Addition of mk_tools, incl. nb_tie() and kendall_var().
+- [fpavogt, 2020.08.21] First code update, incl. CODE OF CONDUCT, Actions, etc ...
+- [fpavogt, 2020.08.21] Create Github repo for mannkendall.
 
+### Changed:
 ### Deprecated:
 ### Removed:
 ### Fixed:
-
 ### Security:
