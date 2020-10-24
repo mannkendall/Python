@@ -5,7 +5,7 @@
 # the ./docs/build/ folder are published as-is in a gh-pages branch of the repo, with only
 # .nojekyll, .gitignore, and .git (folder) in addition.
 
-name: CI_docs
+name: CI_docs_publish
 
 on:
   push:
