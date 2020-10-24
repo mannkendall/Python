@@ -13,8 +13,8 @@
 Welcome to the documentation of the |name| package.
 
 .. note::
-    The documentations pages dedicated to the **matlab** implementation of the code are
-    `here. <https://mannkendall.github.io/matlab>`__
+    The documentations pages dedicated to the **Matlab** implementation of the code are
+    `here. <https://mannkendall.github.io/Matlab>`__
 
     The documentations pages dedicated to the **R** implementation of the code are
     `here. <https://mannkendall.github.io/R>`__
@@ -32,6 +32,6 @@ Welcome to the documentation of the |name| package.
     acknowledge
     license
     changelog
-    Contributing <https://github.com/MeteoSwiss-MDA/mannkendall/blob/develop/CONTRIBUTING.md>
-    Github repository <https://github.com/MeteoSwiss-MDA/mannkendall>
+    Contributing <https://github.com/MannKendall/Python/blob/master/CONTRIBUTING.md>
+    Github repository <https://github.com/MannKendall/Python>
     modules
