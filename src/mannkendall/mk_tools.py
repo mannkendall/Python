@@ -93,13 +93,17 @@ def nb_tie(data, resolution):
         return np.array([np.count_nonzero(~np.isnan(data))])
 
     # If there's nothing weird with the data, let's compute the bin edges.
-    bins = np.arange(np.nanmin(data), np.nanmax(data)+resolution, resolution)
+    # Avoid the use of np.arange because of floating point errors, in favor of linspace
+    #bins = np.arange(np.nanmin(data), np.nanmax(data)+resolution, resolution)
+    nbins = int((np.nanmax(data)-np.nanmin(data))//resolution + 1)
+    bins = np.linspace(np.nanmin(data), np.nanmin(data) + nbins * resolution, num=nbins + 1)
+                       #dtype='float128') # Partial fix of #17, but does not work on all machines !
 
     # A sanity check
     if len(bins) < 2:
         raise Exception('Ouch! This error is impossible.')
 
-    # Then compute the number of element sin each bin.
+    # Then compute the number of elements in each bin.
     return np.histogram(data, bins=bins)[0]
 
 
@@ -154,9 +158,6 @@ def nanautocorr(obs, nlags, r=0):
         Adapted from Fabio (2020), Autocorrelation and Partial Autocorrelation with NaNs,
         `<https://www.mathworks.com/matlabcentral/fileexchange/43840-autocorrelation-and-partial-autocorrelation-with-nans>`__,
         MATLAB Central File Exchange. Retrieved August 26, 2020.
-
-    Todo:
-        * add reference to this docstrings.
 
     """
 

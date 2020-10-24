@@ -12,7 +12,7 @@ This file contains the core routines for the mannkendall package.
 """
 
 # Import python packages
-from pathlib import Path
+import warnings
 import numpy as np
 import scipy.stats as spstats
 
@@ -23,18 +23,71 @@ from . import mk_stats as mks
 from . import mk_white as mkw
 
 
-def compute_mk_stat(obs_dts, obs, resolution):
+def prob_3pw(p_pw, p_tfpw_y, alpha_mk):
+    """ Estimate the probability of the MK test and its statistical significance.
+
+        1) Estimates the probability of the MK test with the 3PW method. To have the maximal
+           certainty, P is taken as the maximum of P_PW and P_TFPW_Y.
+        2) Estimates the statistical significance of the MK test as a function of the given
+           confidence level alpha_MK.
+
+    Args:
+        p_pw (float): probability computed from the PW prewhitened dataset
+        p_tfpw_y (float): probability computed from the TFPW_Y prewhitened dataset
+        alpha_mk (float): confidence level in % for the MK test.
+
+    Returns:
+        (float, int): P, ss
+
+    Todo:
+        * improve this docstring
+
+    """
+
+    # Some sanity checks to begin with
+    for item in [p_pw, p_tfpw_y, alpha_mk]:
+        if not isinstance(item, (int, float)):
+            raise Exception('Ouch ! I was expecting a float, not: %s' % (type(item)))
+
+    p_alpha = 1 - alpha_mk/100
+
+    # Compute the probability
+    p = np.nanmax([p_pw, p_tfpw_y])
+
+    # Determine the statistical significance
+    if (p_pw <= p_alpha) & (p_tfpw_y <= p_alpha):
+        ss = alpha_mk
+    elif (p_pw > p_alpha) & (p_tfpw_y <= p_alpha): # false positive for TFPW_Y @ alpha %
+        ss = -1
+    elif (p_tfpw_y > p_alpha) & (p_pw <= p_alpha): # false positive for TFPW_Y
+        ss = -2
+    elif (p_tfpw_y > p_alpha) & (p_pw > p_alpha): # false positive for PW
+        ss = 0
+
+    return (p, ss)
+
+
+def compute_mk_stat(obs_dts, obs, resolution, alpha_mk=95, alpha_cl=90):
     """ Compute all the components for the MK statistics.
 
     Args:
         obs_dts (ndarray of datetime.datetime): a list of observation datetimes.
         obs (ndarray of floats): the data array. Must be 1-D.
         resolution (float): delta value below which two measurements are considered equivalent.
+        alpha_mk (float, optional): confidence level for the Mann-Kendall test in %. Defaults to 95.
+        alpha_cl (float, optional): confidence level for the Sen's slope in %. Defaults to 90.
 
     Returns:
         (dict, int, float, float): result, s, vari, z
 
     """
+
+    # Some sanity checks
+    for item in [alpha_mk, alpha_cl]:
+        if not isinstance(item, (int, float)):
+            raise Exception('Ouch! alphas must be of type float, not: %s' %(type(item)))
+    if alpha_mk < 0 or alpha_mk > 100 or alpha_cl < 0 or alpha_cl > 100:
+        raise Exception("Ouch ! Confidence limits must be 0 <= CL <= 100.")
 
     result = {}
 
@@ -47,159 +100,92 @@ def compute_mk_stat(obs_dts, obs, resolution):
         result['p'] = 2 * (1 - spstats.norm.cdf(np.abs(z), loc=0, scale=1))
     else:
         prob_mk_n = mkh.PROB_MK_N
-        result['p'] = prob_mk_n[np.abs(s), len(obs)]
+        result['p'] = prob_mk_n[np.abs(s), len(obs)] # TODO: np.abs(s) + 1 ?
 
     # Determine the statistic significance
-    if result['p'] <= 0.05:
-        result['ss'] = 95
-    elif 0.1 >= result['p'] > 0.05:
-        result['ss'] = 90
+    if result['p'] <= 1- alpha_mk/100:
+        result['ss'] = alpha_mk
     else:
         result['ss'] = 0
 
-    (slope, slope_min, slope_max) = mks.sen_slope(obs_dts, obs, vari)
-    result['ak'] = np.nan
-    result['slope'] = slope * 3600 * 24 * 365.25  # Transform the slop in 1/yr. TODO: use precise year length ?
-    result['ucl'] = slope_max * 3600 * 24 *365.25 # idem
-    result['lcl'] = slope_min * 3600 * 24 * 365.25 # idem
-    result['median'] = np.nanmedian(obs)
-    result['slope_p'] = result['slope'] * 100/np.abs(result['median'])
-    result['ucl_p'] = slope_max *3600 *24 *365.25 * 100/np.abs(result['median'])
-    result['lcl_p'] = slope_min *3600 *24 *365.25 * 100/np.abs(result['median'])
-    result['xhomo'] = np.nan
+    (slope, slope_min, slope_max) = mks.sen_slope(obs_dts, obs, vari, alpha_cl=alpha_cl)
+    # Transform the slop in 1/yr.
+    result['slope'] = slope * 3600 * 24 * 365.25
+    result['ucl'] = slope_max * 3600 * 24 *365.25
+    result['lcl'] = slope_min * 3600 * 24 * 365.25
 
     return (result, s, vari, z)
 
-# TODO: the following function is superseeded by mk_multi_tas()
-#def mk_year(obs_dts, obs, resolution, pw_method = '3pw'):
-    """Applies the Mann-Kendall test and the Sen slope on the given time granularity.
-
-    Three pre-whitening methods are applied:
-        *  PW (storch), and TFPW_Y (trend free PW, Yue et al, 2002) to compute the statistical
-        significance, and
-        * VCTFPW (W. Wang, Y. Chen, S. Becker & B. Liu, 2015) to compute the Sen's slope.
-
-    Only the statistically significant autocorrelation are taken into account for the prewhitening.
-
-    The statistically significance of the trends is taken at 95% confidence limit.
-
-    The upper and lower confidence limits are given by the 90% of all the intervals differences
-    distribution.
-
-    The significance level is given by the Mann-Kendall test and has therefore no direct relation
-    to the confidence limits.
-
-    The resolution is taken into account to determine the number of ties in the data. It should
-    typically be similar (or slightly larger) than the temporal resolution of the instrument. One
-    should note, however, that this parameter isn't usually determinant for the results.
-
-    Args:
-        obs_dts (ndarray of datetime.datetime): a list of observation datetimes.
-        obs (ndarray of floats): the data array. Must be 1-D.
-        pw_method( str): must be one of ['3pw', 'pw', 'tfpw_y', 'tfpw_ws', 'vctfpw'].
-                         Defaults to '3PW'.
-        resolution (float): delta value below which two measurements are considered equivalent.
-
-    Returns:
-        dict: a dictionnary with the following entries:
-                  * 'period':year or 12 months + year or 4 meteorological seasons + year
-                  * 'ss': statistical significance, where:
-                      - float>95: at least float>95 for both PW and TFPW_Y tests
-                      - float>90: 90<float<95 for both PW and TFPW_Y tests
-                      - -1: test is statistically significant for TFPW_Y, but not for PW (false positive)
-                      - -2 or -3: test is statistically significant for PW, but not for TFPW_Y (false negative)
-                      - 0: neither PW nor TFPW_Y are statistically significant
-                  * 'slope': Sen's slope in units/yr
-                  * 'ucl': upper confidence level in units/yr
-                  * 'lcl': lower confidence level in untis/yr
-                  * 'median': median of the data
-                  * 'slope_p': Sen's slope in %/yr
-                  * 'ucl_p': upper confidence limit in %/yr
-                  * 'lcl_p': lower confidence limit in %/yr
-                  * 'ak': first lag autocorrelation after detrending
-                  * 'xhomo': homogeneity of the trend per seasons/month:
-                      - 1: homogeneous at 90% confidence level
-                      - 0: not homogenous the yearly slope should not be calculated
-                      - np.nan: not assigned for yearly trend.
-
-    Note:
-        References:
-            * W. Wang, Y. Chen, S. Becker & B. Liu, 2015, Variance Correction PreWhitening Method
-              for trend Detection in Autocorrelated Data, J. Hydrol. Eng., 20 (12).
-              `<https://doi.org/10.1061/(ASCE)HE.1943-5584.0001234>`__
-            * WMO-GAW publication 133, annex E, p.26
-            * explanantions of MULTMK/PARTMK from C.
-    Todo:
-        * fix this docstring.
-
-    """
-'''
-    # Find the limiting years
-    obs_years = np.array([item.year for item in obs_dts])
-    min_year = np.min(obs_years)
-    max_year = np.max(obs_years)
-
-    # Compute the 3 prewhitened time series.
-    (data_pw, ak_y) = mkw.prewhite(obs, obs_dts, resolution)
-
-    result = {}
-
-    # Compute the Mann-Kendall parameters for PW method
-    if pw_method in ['pw', 'tfpw_y', 'tfpw_ws', 'vctfpw']:
-        (result, _, _, _) = compute_mk_stat(obs_dts, data_pw[pw_method], resolution)
-        result['ak'] = ak_y[pw_method]
-
-    elif pw_method == '3pw':
-
-        (result_pw, _, _, _) = compute_mk_stat(obs_dts, data_pw['pw'], resolution)
-        (result_tfpw_y, _, _, _) = compute_mk_stat(obs_dts, data_pw['tfpw_y'], resolution)
-        (result_vctfpw, _, _, _) = compute_mk_stat(obs_dts, data_pw['vctfpw'], resolution)
-        result['ak'] = ak_y['vctfpw']
-
-        # Determine the statistical significance
-        if (result_pw['p'] <= 0.05) & (result_tfpw_y['p'] <= 0.05):
-            # If both methods are above 95%, give the worst of both.
-            result['ss'] = 100. * (1 - np.max([result_pw['p'], result_tfpw_y['p']]))
-        elif (0.1 >= result_pw['p'] > 0.05) & (0.1 >= result_tfpw_y['p'] <= 0.05):
-            # Idem, but if both methods are between 90% and 95%
-            result['ss'] = 100. * (1 - np.max([result_pw['p'], result_tfpw_y['p']]))
-        elif (result_pw['p'] > 0.05) & (result_tfpw_y['p'] <= 0.05):
-            # False positive
-            result['ss'] = -1
-        elif (result_pw['p'] <= 0.05) & (result_tfpw_y['p'] > 0.05):
-            # False negative
-            result['ss'] = -2
-        elif (result_pw['p'] <= 0.1) & (result_tfpw_y['p'] > 0.1):
-            #TODO: we will actually never enter this place: we would get caught by the previous one!
-            # False positive
-            result['ss'] = -3
-        else:
-            result['ss'] = 0
-
-        # Let's assign the rem,aining variables
-        for item in ['slope', 'ucl', 'lcl', 'median', 'slope_p', 'ucl_p', 'lcl_p', 'xhomo']:
-            result[item] = result_vctfpw[item]
-    else:
-        raise Exception('Ouch ! Unknowkn pw_method: %s' % (pw_method))
-
-    return result
-'''
-
-def mk_multi_tas(multi_obs_dts, multi_obs, resolution, pw_method='3pw'):
+def mk_temp_aggr(multi_obs_dts, multi_obs, resolution, pw_method='3pw',
+                 alpha_mk=95, alpha_cl=90, alpha_xhomo=90, alpha_ak=95):
     """ Applies the Mann-Kendall test and the Sen slope on the given time granularity for a data set
     split into different temporal aggregations.
 
+    Five prewhitening methods can be chosen:
+
+        * 3PW (Collaud Coen et al., 2020): 3 prewhitening methods are applied (PW and TFPW_Y to
+          determine the statistic significance (ss) of the MK test and the VCTFPW method to compute
+          the Sen's slope.
+        * PW (prewhitened, Kulkarni and von Storch, 1995)
+        * TFPW_Y(trend free PW,Yue et al., 2001)
+        * TFPW_WS (trend free PW, Wang and Swail, 2001)
+        * VCTFPW (variance corrected trend free PW, Wang et al., 2015)
+
+    For the PW,only ss autocorrelation are taken into account.
+    The default ss for the MK test is taken at 95% confidence limit.
+    The default ss for upper and lower confidence limits is 90% of the all intervals differences
+    distribution.
+
+    The default ss for the autocorrelation coefficient is 95%.
+    The default ss for the homogeneity test between temporal aggregation of the MK test is 90%.
+    If seasonal Mann-Kendall is applied, the yearly trend is assigned only if the results of the
+    seasonal test are homogeneous. The default ss for the homogeneity test between temporal
+    aggregation of the seasonal MK test is 90%.
+
+
     Args:
-        multi_obs_dts (list of 1-D ndarray of datetime.datime):
-        multi_obs (list of 1-D ndarray)
-        resolution (float)
-        pw_method
+        multi_obs_dts (list of 1-D ndarray of datetime.datime): the observation times. Each array
+                                                                defines a new season.
+        multi_obs (list of 1-D ndarray): the observations. Each array defines a new season.
+        resolution (float): interval to determine the number of ties. It should be similar to the
+                            resolution of the instrument.
+        pw_method (str): must be one of ['3pw', 'pw, 'tfpw_y', 'tfpw_ws', 'vctfpw'].
+                         Defaults to '3pw'.
+        alpha_mk (float, optional): confidence limit for Mk test in %. Defaults to 95.
+        alpha_cl (float, optional): confidence limit for the Sen's slope in %. Defaults to 90.
+        alpha_xhomo (float, optional): confidence limit for the homogeneity between seasons in %.
+                                       Defaults to 90.
+        alpha_ak (float, optional): confidence limit for the first lag autocorrelation in %.
+                                    Defaults to 95.
 
     Returns:
-        dict
+        dict: comprises the following fields
 
-    Todo:
-        * Drastically improve this docstring, to be as good as the former mk_year().
+            * 'p' (float): probability for the statistical significance. If 3PW is applied,
+              P= max(P_PW, P_TFPW_Y);
+            * 'ss' (float): statistical significance:
+
+                - alpha_MK if the test is ss at the alpha confidence level. Defaults to 95.
+                - 0 if the test is not ss at the alpha_MK confidence level.
+                - -1 if the test is a TFPW_Y false positive at alpha_MK confidence level
+                - -2 if the test is a PW false positive at alpha_MK confidence level
+            * 'slope' (float): Sen's slope in units/y
+            * 'ucl' (float): upper confidence level in units/y
+            * 'lcl' (float): lower confidence level in units/y
+
+    Note:
+        Sources
+
+            * Collaud Coen et al., Effects of the prewhitening method, the time granularity and the
+              time segmentation on the Mann-Kendall trend detection and the associated Sen's slope,
+              Atmos. Meas. Tech. Discuss, https://doi.org/10.5194/amt-2020-178, 2020.
+            * Sirois, A.: A brief and biased overview of time-series analysis of how to find that
+              evasive trend, WMO/EMEP Workshop on Advanced Statistical Methods and Their Application
+              to Air Quality Data Sets, Annex E., Global Atmosphere Watch No. 133, TD- No. 956,
+              World Meteorological Organization, Geneva, Switzerland, 1998. annexe E, p. 26.
+            * Gilbert, R.: Statistical Methods for Environmental Pollution Monitoring, Van Nostrand
+              Reinhold Company, New York, 1987.
+            * The explanations about MULTMK/PARTMK de C. Libiseller.
 
     """
 
@@ -207,7 +193,6 @@ def mk_multi_tas(multi_obs_dts, multi_obs, resolution, pw_method='3pw'):
     if pw_method not in mkh.VALID_PW_METHODS:
         raise Exception('Ouch ! pw_method unknown.')
 
-    # TODO: merge this into a sub-function ?
     if not isinstance(multi_obs_dts, list):
         # If I received a 1-D array, be nice and deal with it.
         if isinstance(multi_obs_dts, np.ndarray):
@@ -233,6 +218,12 @@ def mk_multi_tas(multi_obs_dts, multi_obs, resolution, pw_method='3pw'):
     if np.any([len(item) != len(multi_obs[ind]) for (ind, item) in enumerate(multi_obs_dts)]):
         raise Exception('Ouch ! Inconsistent length between obs and obs_dts arrays.')
 
+    for item in [alpha_mk, alpha_cl, alpha_xhomo, alpha_ak]:
+        if not isinstance(item, (int, float)):
+            raise Exception('Ouch ! alpha should be of type float, not: %s' % (type(item)))
+        if (item > 100) or (item < 0):
+            raise Exception('Ouch ! I need 0 < alpha < 100, not:' % (item))
+
     # How many different time aggregates do we have ?
     n_tas = len(multi_obs_dts)
     # What is the length of each time aggregate ?
@@ -241,9 +232,9 @@ def mk_multi_tas(multi_obs_dts, multi_obs, resolution, pw_method='3pw'):
     # First, apply the necessary prewhitening to *all* the data combined.
     # To do that, I need to put the data in order !
     sort_ind = np.concatenate(multi_obs_dts).argsort()
-    (multi_obs_pw, ak_y) = mkw.prewhite(np.concatenate(multi_obs)[sort_ind],
-                                        np.concatenate(multi_obs_dts)[sort_ind],
-                                        resolution)
+    multi_obs_pw = mkw.prewhite(np.concatenate(multi_obs)[sort_ind],
+                                np.concatenate(multi_obs_dts)[sort_ind],
+                                resolution, alpha_ak=alpha_ak)
 
     # Re-split the data according to the original input ... including
     for key in multi_obs_pw:
@@ -269,8 +260,7 @@ def mk_multi_tas(multi_obs_dts, multi_obs, resolution, pw_method='3pw'):
         # First, let's make sure there are enough data in the period.
         if len(multi_obs[ta_ind]) <= 1:
             result[ta_ind] = {'p': np.nan, 'ss': np.nan, 'slope': np.nan, 'ucl': np.nan,
-                              'lcl': np.nan, 'median': np.nan, 'slope_p': np.nan, 'ucl_p': np.nan,
-                              'lcl_p': np.nan}
+                              'lcl': np.nan}
             continue
 
         # Now, run whichever method was requested
@@ -278,151 +268,107 @@ def mk_multi_tas(multi_obs_dts, multi_obs, resolution, pw_method='3pw'):
         if pw_method in ['pw', 'tfpw_y', 'tfpw_ws', 'vctfpw']:
             (result[ta_ind], s, vari, z[ta_ind]) = compute_mk_stat(multi_obs_dts[ta_ind],
                                                                    multi_obs_pw[pw_method][ta_ind],
-                                                                   resolution)
+                                                                   resolution, alpha_mk=alpha_mk,
+                                                                   alpha_cl=alpha_cl)
             s_tot['-'] += s
             var_tot['-'] += vari
-            ak = ak_y[pw_method]
+            #ak = ak_y[pw_method]
 
         elif pw_method == '3pw':
 
             (result_pw, s_pw, vari_pw, _) = compute_mk_stat(multi_obs_dts[ta_ind],
-                                                            multi_obs_pw['pw'][ta_ind], resolution)
+                                                            multi_obs_pw['pw'][ta_ind], resolution,
+                                                            alpha_mk=alpha_mk, alpha_cl=alpha_cl)
             s_tot['pw'] += s_pw
             var_tot['pw'] += vari_pw
 
             (result_tfpw_y, s_tfpw_y, vari_tfpw_y, _) = \
-                compute_mk_stat(multi_obs_dts[ta_ind], multi_obs_pw['tfpw_y'][ta_ind], resolution)
+                compute_mk_stat(multi_obs_dts[ta_ind], multi_obs_pw['tfpw_y'][ta_ind], resolution,
+                                alpha_mk=alpha_mk, alpha_cl=alpha_cl)
             s_tot['tfpw_y'] += s_tfpw_y
             var_tot['tfpw_y'] += vari_tfpw_y
 
             (result_vctfpw, _, _, z[ta_ind]) = compute_mk_stat(multi_obs_dts[ta_ind],
                                                                multi_obs_pw['vctfpw'][ta_ind],
-                                                               resolution)
+                                                               resolution, alpha_mk=alpha_mk,
+                                                               alpha_cl=alpha_cl)
 
             # Determine the statistical significance
-            if (result_pw['p'] <= 0.05) & (result_tfpw_y['p'] <= 0.05):
-                # If both methods are above 95%, give the worst of both.
-                result[ta_ind]['ss'] = 100. * (1 - np.max([result_pw['p'], result_tfpw_y['p']]))
-            elif (0.1 >= result_pw['p'] > 0.05) & (0.1 >= result_tfpw_y['p'] <= 0.05):
-                # Idem, but if both methods are between 90% and 95%
-                result[ta_ind]['ss'] = 100. * (1 - np.max([result_pw['p'], result_tfpw_y['p']]))
-            elif (result_pw['p'] > 0.05) & (result_tfpw_y['p'] <= 0.05):
-                # False positive
-                result[ta_ind]['ss'] = -1
-            elif (result_pw['p'] <= 0.05) & (result_tfpw_y['p'] > 0.05):
-                # False negative
-                result[ta_ind]['ss'] = -2
-            elif (result_pw['p'] <= 0.1) & (result_tfpw_y['p'] > 0.1):
-                #TODO: we will actually never enter this place: we would get caught by the previous one!
-                # False positive
-                result[ta_ind]['ss'] = -3
-            else:
-                result[ta_ind]['ss'] = 0
+            (result[ta_ind]['p'], result[ta_ind]['ss']) = prob_3pw(result_pw['p'],
+                                                                   result_tfpw_y['p'],
+                                                                   alpha_mk)
 
             # Let's assign the remaining variables
-            for item in ['slope', 'ucl', 'lcl', 'median', 'slope_p', 'ucl_p', 'lcl_p']:
+            for item in ['slope', 'ucl', 'lcl']:
                 result[ta_ind][item] = result_vctfpw[item]
-
-            ak = ak_y['vctfpw']
 
         else:
             raise Exception('Ouch ! Unknowkn pw_method: %s' % (pw_method))
 
 
     # Now let's look at the sum of all the time aggregations.
-    # TODO: simplify (by function grouping) the following two if clauses
     result[n_tas] = {}
-    result[n_tas]['ak'] = ak
+    #result[n_tas]['ak'] = ak
 
     if pw_method != '3pw':
 
         z_tot = mks.std_normal_var(s_tot['-'], var_tot['-'])
 
-        if np.sum([len(item) for item in multi_obs]) > 10: # TODO: count all values, including nans?
+        if np.sum([np.count_nonzero(~np.isnan(item)) for item in multi_obs]) > 10:
             result[n_tas]['p'] = 2 * (1 - spstats.norm.cdf(np.abs(z_tot), loc=0, scale=1))
         else:
-            # TODO: do we really need this external file ?
-            prob_mk_n = np.genfromtext(Path(__file__).parent / 'Prob_MK_n.csv')
-            result[n_tas]['p'] = prob_mk_n[np.abs(s_tot['-']),
-                                           np.sum([len(item) for item in multi_obs])] # TODO: check this !
+            # TODO: check this !
+            result[n_tas]['p'] = mkh.PROB_MK_N[np.abs(s_tot['-']),
+                                               np.sum([np.count_nonzero(~np.isnan(item)) for item
+                                                       in multi_obs])]
 
         # Compute the statistical significance
-        if result[n_tas]['p'] <= 0.1:
-            result[n_tas]['ss'] = 100 * (1.-result[n_tas]['p'])
+        if result[n_tas]['p'] <= 1-alpha_mk/100:
+            result[n_tas]['ss'] = alpha_mk
         else:
             result[n_tas]['ss'] = 0
 
-        # Compute the median
-        result[n_tas]['median'] = np.nanmedian(np.concatenate(multi_obs))
-
         # Compute the chi-square to test the homogeneity between months
-        xhomo = np.nansum(z**2) - n_tas *np.nanmean(z)**2 # TODO: check ok with matlab code.
-
-        if xhomo <= 4.575:
-            result[n_tas]['xhomo'] = 1
-        else:
-            result[n_tas]['xhomo'] = 0
+        xhomo = np.nansum(z**2) - n_tas * np.nanmean(z)**2
 
     if pw_method == '3pw':
 
         z_tot_pw = mks.std_normal_var(s_tot['pw'], var_tot['pw'])
 
-
         if np.sum([np.count_nonzero(~np.isnan(item)) for item in multi_obs]) > 10:
             p_tot_pw = 2 * (1 - spstats.norm.cdf(np.abs(z_tot_pw), loc=0, scale=1))
         else:
-            # TODO: do we really need this external file ?
-            prob_mk_n = np.genfromtext(Path(__file__).parent / 'Prob_MK_n.csv')
-            p_tot_pw = prob_mk_n[np.abs(s_tot['pw']),
-                                 np.sum([np.count_nonzero(~np.isnan(item)) for item in multi_obs])] # TODO: check this !
+            p_tot_pw = mkh.PROB_MK_N[np.abs(s_tot['pw']),
+                                     np.sum([np.count_nonzero(~np.isnan(item)) for item
+                                             in multi_obs])] # TODO: check this !
 
         z_tot_tfpw_y = mks.std_normal_var(s_tot['tfpw_y'], var_tot['tfpw_y'])
 
-        # TODO: check this with the new matlab code.
         if np.sum([np.count_nonzero(~np.isnan(item)) for item in multi_obs]) > 10:
-            p_tot_tfpw_y = 2 * (1 - spstats.norm.cdf(np.abs(z_tot_pw), loc=0, scale=1))
+            p_tot_tfpw_y = 2 * (1 - spstats.norm.cdf(np.abs(z_tot_tfpw_y), loc=0, scale=1))
         else:
-            # TODO: do we really need this external file ?
-            prob_mk_n = np.genfromtext(Path(__file__).parent / 'Prob_MK_n.csv')
-            p_tot_tfpw_y = prob_mk_n[np.abs(s_tot['tfpw_y']),
-                                     np.sum([np.count_nonzero(~np.isnan(item))
-                                             for item in multi_obs])] # TODO: check this !
+            p_tot_tfpw_y = mkh.PROB_MK_N[np.abs(s_tot['tfpw_y']),
+                                         np.sum([np.count_nonzero(~np.isnan(item))
+                                                 for item in multi_obs])] # TODO: check this !
 
         # Determine the statistical significance
-        if (p_tot_pw <= 0.05) & (p_tot_tfpw_y <= 0.05):
-            # If both methods are above 95%, give the worst of both.
-            result[n_tas]['ss'] = 100. * (1 - np.max([p_tot_pw, p_tot_tfpw_y]))
-        elif (0.1 >= p_tot_pw > 0.05) & (0.1 >= result_tfpw_y['p'] <= 0.05):
-            # Idem, but if both methods are between 90% and 95%
-            result[n_tas]['ss'] = 100. * (1 - np.max([p_tot_pw, p_tot_tfpw_y]))
-        elif (p_tot_pw > 0.05) & (p_tot_tfpw_y <= 0.05):
-            # False positive
-            result[n_tas]['ss'] = -1
-        elif (p_tot_pw <= 0.05) & (p_tot_tfpw_y > 0.05):
-            # False negative
-            result[n_tas]['ss'] = -2
-        elif (p_tot_pw <= 0.1) & (p_tot_tfpw_y > 0.1):
-            #TODO: we will actually never enter this place: we would get caught by the previous one!
-            # False positive
-            result[n_tas]['ss'] = -3
-        else:
-            result[n_tas]['ss'] = 0
+        (result[n_tas]['p'], result[n_tas]['ss']) = prob_3pw(p_tot_pw, p_tot_tfpw_y, alpha_mk)
 
-        # Compute the chi-squre to test the homogeneity between time aggregations. Since the slop is
-        # computed from VCTFPW, the homogeneity is also computed from VCTFPW.
-        xhomo = np.nansum(z**2)-n_tas*np.nansum(z)**2
-        if xhomo <= 4.575:
-            result[n_tas]['xhomo'] = 1
-        else:
-            result[n_tas]['xhomo'] = 0
+        # Compute the chi-squre to test the homogeneity between time aggregations. Since the slope
+        # is computed from VCTFPW, the homogeneity is also computed from VCTFPW.
+        xhomo = np.nansum(z**2) - n_tas * np.nanmean(z)**2
 
     # Write the yearly slope and CL
-    for item in ['slope', 'ucl', 'lcl']:
-        result[n_tas][item] = np.nanmedian([result[key][item] for key in result if key != n_tas])
-
-    result[n_tas]['median'] = np.nanmedian(np.concatenate(multi_obs_pw['vctfpw']))
-    result[n_tas]['slope_p'] = result[n_tas]['slope'] * 100./ np.abs(result[n_tas]['median'])
-    result[n_tas]['ucl_p'] = result[n_tas]['ucl'] * 100./ np.abs(result[n_tas]['median'])
-    result[n_tas]['lcl_p'] = result[n_tas]['lcl'] * 100./ np.abs(result[n_tas]['median'])
+    # xhomo has a chi-squared distribution with n-1 and 1 degree of freedom. Seasonal trends
+    # are homogeneous if xhomo is smaller than the threshold defined by the degree of freedom and
+    # the confidence level alpha_xhomo.
+    if n_tas == 1 or (xhomo <= spstats.distributions.chi2.ppf(1-alpha_xhomo/100, df=n_tas-1)):
+        for item in ['slope', 'ucl', 'lcl']:
+            result[n_tas][item] = np.nanmedian([result[key][item] for key in result
+                                                if key != n_tas])
+    else:
+        warnings.warn('The trends for the temporal aggregation are not homogenous.')
+        for item in ['slope', 'ucl', 'lcl']:
+            result[n_tas][item] = np.nan
 
     return result
