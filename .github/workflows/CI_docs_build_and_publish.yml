@@ -35,6 +35,15 @@ jobs:
             ref: gh-pages
             path: './docs/build/'
 
+      # Add/Commit the modified docs, and push it back to the branch
+      - name: Tmp
+        run: |
+          cd ./docs/build
+          touch test.test
+          git add test.test
+          git commit -m "CI auto-update of the docs on `date +'%Y-%m-%d %H:%M:%S'`"
+          git push origin gh-pages
+
       # Now let's cleaneup the existing docs, keeping the import .git info intact.
       - name: Clean-up the old docs
         run: |
@@ -69,7 +78,7 @@ jobs:
       # Add/Commit the modified docs, and push it back to the branch
       - name: Upload new docs to gh-pages
         run: |
-          cd ./build
+          cd ./docs/build
           git add -A .
           git commit -m "CI auto-update of the docs on `date +'%Y-%m-%d %H:%M:%S'`"
           git push origin gh-pages
