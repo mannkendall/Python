@@ -9,8 +9,8 @@
 name: CI_pytest
 
 on:
-  push:
-    branches: [ master ]
+  #push:
+  #  branches: [ master ]
   pull_request:
     branches: [ master, develop ]
 
