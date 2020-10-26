@@ -24,7 +24,7 @@ If applicable, add screenshots to help explain your problem.
 **Desktop (please complete the following information):**
  - OS: [e.g. iOS]
  - mannkendall version [e.g. 0.1.0]
- - python version [e.g. 3.8.0]
+ - Python version [e.g. 3.8.0]
 
 **Additional context**
 Add any other context about the problem here.

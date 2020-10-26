@@ -1,6 +1,6 @@
 # Created june 2020; F.P.A. Vogt; frederic.vogt@alumni.anu.edu.au
 
-name: CI_docs
+name: CI_docs_check
 
 on:
   push:

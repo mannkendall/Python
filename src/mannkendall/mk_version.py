@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Copyright (c) 2020 MeteoSwiss, contributors of the original matlab version of the code listed in
+Copyright (c) 2020 MeteoSwiss, contributors of the original Matlab version of the code listed in
 ORIGINAL_AUTHORS.
 Copyright (c) 2020 MeteoSwiss, contributors of the Python version of the code listed in AUTHORS.
 
@@ -11,4 +11,4 @@ SPDX-License-Identifier: BSD-3-Clause
 This file contains the version of the code. It is used by the code itself, as well as setup.py.
 """
 
-VERSION = '0.1.0'
+VERSION = '1.0.0'

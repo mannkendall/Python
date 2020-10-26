@@ -318,7 +318,7 @@ def mk_temp_aggr(multi_obs_dts, multi_obs, resolution, pw_method='3pw',
             result[n_tas]['p'] = 2 * (1 - spstats.norm.cdf(np.abs(z_tot), loc=0, scale=1))
         else:
             # TODO: check this !
-            result[n_tas]['p'] = mkh.PROB_MK_N[np.abs(s_tot['-']),
+            result[n_tas]['p'] = mkh.PROB_MK_N[np.nansum(np.abs(s_tot['-'])),
                                                np.sum([np.count_nonzero(~np.isnan(item)) for item
                                                        in multi_obs])]
 
@@ -338,7 +338,7 @@ def mk_temp_aggr(multi_obs_dts, multi_obs, resolution, pw_method='3pw',
         if np.sum([np.count_nonzero(~np.isnan(item)) for item in multi_obs]) > 10:
             p_tot_pw = 2 * (1 - spstats.norm.cdf(np.abs(z_tot_pw), loc=0, scale=1))
         else:
-            p_tot_pw = mkh.PROB_MK_N[np.abs(s_tot['pw']),
+            p_tot_pw = mkh.PROB_MK_N[np.nansum(np.abs(s_tot['pw'])),
                                      np.sum([np.count_nonzero(~np.isnan(item)) for item
                                              in multi_obs])] # TODO: check this !
 
@@ -347,7 +347,7 @@ def mk_temp_aggr(multi_obs_dts, multi_obs, resolution, pw_method='3pw',
         if np.sum([np.count_nonzero(~np.isnan(item)) for item in multi_obs]) > 10:
             p_tot_tfpw_y = 2 * (1 - spstats.norm.cdf(np.abs(z_tot_tfpw_y), loc=0, scale=1))
         else:
-            p_tot_tfpw_y = mkh.PROB_MK_N[np.abs(s_tot['tfpw_y']),
+            p_tot_tfpw_y = mkh.PROB_MK_N[np.nansum(np.abs(s_tot['tfpw_y'])),
                                          np.sum([np.count_nonzero(~np.isnan(item))
                                                  for item in multi_obs])] # TODO: check this !
 
