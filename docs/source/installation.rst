@@ -38,7 +38,7 @@ installed by ``pip`` if required:
 Testing the installation
 ------------------------
 
-The most basic check to see if the installation was successful consists in checking the version of
+The most basic check to see if the installation was successful is to verify the version of
 the package:
 
 .. code-block:: python
