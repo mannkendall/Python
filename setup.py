@@ -63,6 +63,6 @@ setup(
 
     ],
 
-    include_package_data=False,  # If True, non .py files make it onto pypi !
+    include_package_data=True,  # If True, non .py files make it onto pypi !
 
 )

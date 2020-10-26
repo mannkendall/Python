@@ -12,3 +12,4 @@ docs/source/modules
 build/
 *.egg-info
 __pycache__
+dist/
