@@ -14,7 +14,7 @@
    :target: https://github.com/mannkendall/Python
 
 .. |github| image:: https://img.shields.io/github/release/mannkendall/Python.svg
-   :target: https://github.com/mannkendall/Python/releases)
+   :target: https://github.com/mannkendall/Python/releases
 
 .. |pypi| image:: https://img.shields.io/pypi/v/mannkendall.svg?colorB=<brightgreen>
    :target: https://pypi.python.org/pypi/mannkendall/
