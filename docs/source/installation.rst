@@ -28,7 +28,7 @@ Requirements
     :language: python
     :lines: 39
 
-Furthermore, |name| relies on a the following external modules, which will be automatically
+Furthermore, |name| relies on the following external modules, which will be automatically
 installed by ``pip`` if required:
 
 .. literalinclude:: ../../setup.py
