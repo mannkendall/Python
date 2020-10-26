@@ -4,6 +4,7 @@
 # the ./docs/source/ material and turn it into a compiled ./docs/build read docs; 3) the content of
 # the ./docs/build/ folder are published as-is in a gh-pages branch of the repo, with only
 # .nojekyll, .gitignore, and .git (folder) in addition.
+#
 # This workflow will only run if the docs were actually modified in the push request.
 
 name: CI_docs_publish
@@ -38,15 +39,6 @@ jobs:
             ref: gh-pages
             path: './docs/build/'
 
-      # Add/Commit the modified docs, and push it back to the branch
-    #  - name: Tmp
-    #    run: |
-    #      cd ./docs/build
-    #      touch test.test
-    #      git add test.test
-    #      git commit -m "CI auto-update of the docs on `date +'%Y-%m-%d %H:%M:%S'`"
-    #      git push origin gh-pages
-
       # Now let's cleaneup the existing docs, keeping the import .git info intact.
       - name: Clean-up the old docs
         run: |
@@ -55,7 +47,9 @@ jobs:
           cd ../..
 
       # Set up Python
-      - uses: actions/setup-python@v1
+      - uses: actions/setup-python@v2
+        with:
+            python-version:: '3.8'
 
       # Install any dependency we require
       - name: Install dependancies
