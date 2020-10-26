@@ -7,8 +7,8 @@
 name: CI_pylinter
 
 on:
-  push:
-    branches: [ master ]
+  #push:
+  #  branches: [ master ]
   pull_request:
     branches: [ master, develop ]
 
@@ -25,7 +25,11 @@ jobs:
       - uses: actions/checkout@v2
 
       # Set up Python
-      - uses: actions/setup-python@v1
+      - uses: actions/setup-python@v2
+      # The following should be temporary ... right now, the default goes to 3.9, but many wheels
+      # are still missing for this version.
+        with:
+            python-version: '3.8'
 
       # Install any dependency we require
       - name: Install dependancies
