@@ -8,7 +8,7 @@ Acknowledging |name|
    number. Ideally, you should also include the Digital Object Identifier (DOI) associated to the
    specific release you have been using:
 
-   |name| |version| (DOI:)
+   |name| |version| |DOI|
 
 2. If |name| was useful for your research, please cite the dedicated article:
 
