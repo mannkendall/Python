@@ -3,12 +3,7 @@
 
 |name| |version| |stars| |watch|
 ================================
-|last-commit| |issues|
-
-.. todo::
-
-    Tags for the latest pypi release and associated DOI should be added when releasing the code
-    for the first time.
+|github| |DOI| |pypi| |last-commit| |issues|
 
 Welcome to the documentation of the |name| package.
 
