@@ -12,3 +12,12 @@
 
 .. |watch| image:: https://img.shields.io/github/watchers/mannkendall/Python.svg?style=social&label=Watch
    :target: https://github.com/mannkendall/Python
+
+.. |github| image:: https://img.shields.io/github/release/mannkendall/Python.svg
+   :target: https://github.com/mannkendall/Python/releases)
+
+.. |pypi| image:: https://img.shields.io/pypi/v/mannkendall.svg?colorB=<brightgreen>
+   :target: https://pypi.python.org/pypi/mannkendall/
+
+.. |DOI| image:: https://zenodo.org/badge/289275277.svg
+   :target: https://zenodo.org/badge/latestdoi/289275277
