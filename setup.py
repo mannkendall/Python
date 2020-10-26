@@ -37,9 +37,9 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     python_requires='>=3.8.0',
-    install_requires=["numpy >= 1.19",
-                      "scipy >= 1.5.0",
-                      "statsmodels >= 0.12.0",
+    install_requires=["numpy>=1.19.2",
+                      "scipy>=1.5.0",
+                      "statsmodels>=0.12.0",
                       "pytest"],
 
     classifiers=[
@@ -48,11 +48,11 @@ setup(
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
 
         # Indicate who your project is intended for
         'Intended Audience :: Science/Research',
-        'Topic :: Scientific/Engineering :: Meteorology',
+        'Topic :: Scientific/Engineering :: Atmospheric Science',
 
         # Pick your license as you wish (should match "license" above)
         'License :: OSI Approved :: BSD License',
@@ -63,6 +63,6 @@ setup(
 
     ],
 
-    include_package_data=False,  # If True, non .py files make it onto pypi !
+    include_package_data=True,  # If True, non .py files make it onto pypi !
 
 )

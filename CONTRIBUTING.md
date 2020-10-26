@@ -7,7 +7,7 @@ mannkendall (Python) ? :heart_eyes: :tada:
 
 There are many ways that you can do so, including by:
 - [reporting a bug](#reporting-a-bug)
-- fixing a [known issue](https://github.com/MeteoSwiss-MDA/mannkendall/issues?q=is%3Aissue+),
+- fixing a [known issue](https://github.com/mannkendall/Python/issues?q=is%3Aissue+),
 - implementing a new functionality,
 - adding more functional tests, and/or
 - improving the documentation:
@@ -16,7 +16,7 @@ There are many ways that you can do so, including by:
   * in the website, via the docs `.rst` files
 
 All these contributions are welcome, and what follows should help you get started. Note that
-contributing to mannkendall (Python) does *not* necessarily require an advanced knowledge of python
+contributing to mannkendall (Python) does *not* necessarily require an advanced knowledge of Python
 and/or Github. Helping us fix typos in the docs, for example, could be an excellent first
 contribution. Plus, :anger: typos :anger: are the worst !
 
@@ -70,6 +70,10 @@ key facts about the mannkendall (Python) code and its repository:
 3. **Documentation:**
    * The mannkendall documentation is generated using Sphinx, with the Read-the-docs theme. The
      compiled documentation is hosted on the `gh-pages` branch of the mannkendall Python repositiory.
+   * Two docs-related Github Actions are implemented:
+     - `CI_docs_check`: triggered on pull requests, compiles the docs and look for errors.
+     - `CI_docs_publish`: triggered on push to master if the docs is changed, compiles the docs and
+        pushes it to the branch `gh-pages`, thus automatically publisihing it live. 
 
 ## Styles
 

@@ -1,0 +1,10 @@
+include AUTHORS
+include CHANGELOG
+include CODE_OF_CONDUCT.md
+include CONTRIBUTING.md
+include LICENSE
+include ORIGINAL_AUTHORS
+include README.md
+exclude docs/*
+exclude test/*
+exclude dist/*
