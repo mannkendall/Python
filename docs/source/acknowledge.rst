@@ -73,7 +73,3 @@ Acknowledging |name|
                        booktitle={9th Python in Science Conference},
                        year={2010},
                        }
-
-.. todo::
-
-    When the time comes, include here the link to the dedicated mannkendall article.
