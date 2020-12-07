@@ -3,21 +3,16 @@
 Installation
 ============
 
-.. todo::
-
-    Include a link to the pypi page in the very next sentence.
-
-|name| will be available on pypi, which should make its installation straighforward.
-In a terminal, type:
+|name| is available on `pypi <https://pypi.org/project/mannkendall/>`__, which should make its
+installation straighforward. In a terminal, type:
 
 .. code-block:: python
 
    pip install mannkendall
 
 And that will take care of things. |name| uses `semantic versioning <https://semver.org/>`_.
-The latest stable version is |version|.
 
-The most recent release of |name| is also available for download from its
+The most recent release of |name| (|github|) is also available for download from its
 `Github repository <https://github.com/mannkendall/Python/releases/latest/>`_.
 
 Requirements
