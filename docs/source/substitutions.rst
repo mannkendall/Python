@@ -5,7 +5,7 @@
    :target: https://github.com/mannkendall/Python
 
 .. |issues| image:: https://img.shields.io/github/issues/mannkendall/Python.svg?colorB=b4001e
-   :target: https://github.com/annkendall/Python/issues
+   :target: https://github.com/mannkendall/Python/issues
 
 .. |stars| image:: https://img.shields.io/github/stars/mannkendall/Python.svg?style=social&label=Stars
    :target: https://github.com/mannkendall/Python
