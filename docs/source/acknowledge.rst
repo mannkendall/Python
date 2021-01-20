@@ -12,15 +12,16 @@ Acknowledging |name|
 
 2. If |name| was useful for your research, please cite the dedicated article:
 
-   `Collaud Coen et al., 2020, ... <http:....>`__
+   `Collaud Coen et al., 2020, Atmos. Meas. Tech., 13, 6945–6964, 2020 <https://doi.org/10.5194/amt-13-6945-2020>`__
 
 3. |name| relies on external Python libraries that require & deserve to be acknowledged in their own
    right. The following LaTeX blurb is one way to do so:
 
    .. code-block:: latex
 
-        This research has made use of \textit{mannkendall v1.0.0} \citep[DOI:][]{CollaudCoen2020}
-        Python package. \textit{mannkendall} relies on the following Python packages:
+        This research has made use of \textit{mannkendall v1.0.0}
+        \citep[DOI:10.5281/zenodo.4134435][]{CollaudCoen2020} Python package. \textit{mannkendall}
+        relies on the following Python packages:
         \textit{numpy} \citep{Oliphant2006, Van2011}, \textit{scipy} \citep{Virtanen2020},
         and \textit{statsmodels} \citep{Seabold2010}.
 
