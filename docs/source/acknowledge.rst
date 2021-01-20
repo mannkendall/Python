@@ -12,7 +12,7 @@ Acknowledging |name|
 
 2. If |name| was useful for your research, please cite the dedicated article:
 
-   `Collaud Coen et al., 2020, Atmos. Meas. Tech., 13, 6945–6964, 2020 <https://doi.org/10.5194/amt-13-6945-2020>`__
+   `Collaud Coen et al., Atmos. Meas. Tech., 13, 6945–6964, 2020 <https://doi.org/10.5194/amt-13-6945-2020>`__
 
 3. |name| relies on external Python libraries that require & deserve to be acknowledged in their own
    right. The following LaTeX blurb is one way to do so:
