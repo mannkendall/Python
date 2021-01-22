@@ -300,7 +300,7 @@ the Sen’s slope.</p></li>
 <li><p>VCTFPW (variance corrected trend free PW, Wang et al., 2015)</p></li>
 </ul>
 </div></blockquote>
-<p>For the PW,only ss autocorrelation are taken into account.
+<p>For the PW method, only ss autocorrelation are taken into account.
 The default ss for the MK test is taken at 95% confidence limit.
 The default ss for upper and lower confidence limits is 90% of the all intervals differences
 distribution.</p>
@@ -328,8 +328,8 @@ Defaults to 95.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>dict</em> –</p>
-<p>comprises the following fields</p>
+<dd class="field-even"><p><p><em>dict of dict</em> – n+1 entries, where n= number of temporal aggregation. The last item
+corresponds to the yearly trend. Each item comprises the following fields:</p>
 <blockquote>
 <div><ul>
 <li><p>’p’ (float): probability for the statistical significance. If 3PW is applied,
