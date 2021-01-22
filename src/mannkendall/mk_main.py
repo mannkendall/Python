@@ -131,7 +131,7 @@ def mk_temp_aggr(multi_obs_dts, multi_obs, resolution, pw_method='3pw',
         * TFPW_WS (trend free PW, Wang and Swail, 2001)
         * VCTFPW (variance corrected trend free PW, Wang et al., 2015)
 
-    For the PW,only ss autocorrelation are taken into account.
+    For the PW method, only ss autocorrelation are taken into account.
     The default ss for the MK test is taken at 95% confidence limit.
     The default ss for upper and lower confidence limits is 90% of the all intervals differences
     distribution.
@@ -159,7 +159,8 @@ def mk_temp_aggr(multi_obs_dts, multi_obs, resolution, pw_method='3pw',
                                     Defaults to 95.
 
     Returns:
-        dict: comprises the following fields
+        dict of dict: n+1 entries, where n= number of temporal aggregation. The last item
+        corresponds to the yearly trend. Each item comprises the following fields:
 
             * 'p' (float): probability for the statistical significance. If 3PW is applied,
               P= max(P_PW, P_TFPW_Y);
