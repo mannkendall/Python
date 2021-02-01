@@ -8,11 +8,20 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added:
 ### Changed:
+### Deprecated:
+### Removed:
+### Fixed:
+### Security:
+
+## [1.1.0] (released: 2021.01.26)
+### Added:
+### Changed:
  - [fpavogt, 2021.01.21] Add better example to docs
  - [fpavogt, 2021.01.20] Minor docs update.
 ### Deprecated:
 ### Removed:
 ### Fixed:
+ - [fpavogt, 2021.01.26] Fix PROB_MK_N
 ### Security:
 
 ## [1.0.0] (released: 2020.10.26)
