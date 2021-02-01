@@ -12,8 +12,10 @@ name: CI_docs_publish
 on:
   push:
     branches: [ master ]
-    paths:
-      - 'docs/**'
+    # Publish docs it was modified
+    #paths:
+    #  - 'docs/**'
+    #  - 'VERSION'
   # For dev purposes, doing it on PR helps a lot
   #pull_request:
   #  branches: [ master ]
