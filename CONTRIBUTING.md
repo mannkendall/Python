@@ -125,3 +125,9 @@ You should feel free to use more of the tools offered by
 ## Step-by-step guide to contributing
 
 WIP.
+
+### Release mechanism ###
+1. Update the code version in `mk_version.py`.
+2. Pull request to `master` will automatically update the docs.
+3. Draft a new release from Github (will trigger new Zenodo DOI to be minted).
+4. Clone `master` locally, and send to pypi.
