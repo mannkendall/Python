@@ -131,3 +131,8 @@ WIP.
 2. Pull request to `master` will automatically update the docs.
 3. Draft a new release from Github (will trigger new Zenodo DOI to be minted).
 4. Clone `master` locally, and send to pypi.
+   - package the code: `python setup.py sdist bdist_wheel`
+   
+   - upload to testpypi: `twine upload --repository-url https://test.pypi.org/legacy/ dist/* --verbose --skip-existing`
+
+   - upload on pypi for real: `twine upload dist/* --verbose --skip-existing`
