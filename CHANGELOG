@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added:
 ### Changed:
+ - [stasinos, 07/07/2022] Runtime optimizations for sen_slope()
 ### Deprecated:
 ### Removed:
 ### Fixed:
