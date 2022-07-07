@@ -33,15 +33,19 @@ setup(
     url="https://github.com/MeteoSwiss-MDA/mannkendall",
     author="MeteoSwiss",
     author_email="fpavogt@users.noreply.github.com",
-    description="TBD",
+    description="Implementation of the Mann-Kendall statistical test associated with " + \
+        "the Sen's slope, following the prescriptions of " + \
+        "Collaud Coen et al.,  2020, Atmos. Meas. Tech., 13, 6945–6964, " + \
+        "https://doi.org/10.5194/amt-2020-178.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     python_requires='>=3.8.0',
     install_requires=["numpy>=1.19.2",
                       "scipy>=1.5.0",
-                      "statsmodels>=0.12.0",
-                      "pytest"],
-
+                      "statsmodels>=0.12.0"],
+    extras_require={
+        'dev': ['sphinx', 'sphinx-rtd-theme', 'pylint', 'pytest']
+    },
     classifiers=[
 
         # How mature is this project? Common values are

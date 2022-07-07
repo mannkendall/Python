@@ -43,16 +43,13 @@ create a new [Github Issue](https://github.com/mannkendall/Python/issues). This 
 way for everyone to keep track of new problems and past solutions.
 
 ## Essential things to know about mannkendall (Python)
-mannkendall (Python) is first-and-foremost a Python module - but not only. It also includes a series
-of parameter and utilitarian files related to its Github repository, and a dedicated documentation
-hosted using Github pages.
+mannkendall (Python) is first-and-foremost a Python module - but not only. It also includes a series of parameters and utilitarian files related to its Github repository, and a dedicated documentation hosted using Github pages.
 
 For the sake of clarity, and to facilitate the maintenance, we list here (succinctly) a series of
 key facts about the mannkendall (Python) code and its repository:
 
 1. **Source code:**
-   * mannkendall (Python) is distributed under the terms of the BSD 3-Clause License. The mannkendall
-    copyright is owned by MeteoSwiss, with the following [authors](AUTHORS).
+   * mannkendall (Python) is distributed under the terms of the BSD 3-Clause License. The mannkendall copyright is owned by MeteoSwiss, with the following [authors](AUTHORS).
    * mannkendall (Python) adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
    * The adopted styles are described [here](#styles).
    * mannkendall (Python) dependencies are specified in `setup.py`.
@@ -63,17 +60,16 @@ key facts about the mannkendall (Python) code and its repository:
      Pull requests to the `master` branch should only originate from the `develop` branch.
    * Any successful pull request to the `master` branch should trigger a new code release.
    * A series of Github Actions are implemented for CI purposes. These include the execution of
-     the mannkendall (Python) tests on Windows, macOS and Linux, a linting of the code, a validation
-     of the docs, and a check of the `CHANGELOG`.
+     the mannkendall (Python) tests on Windows, macOS and Linux, a linting of the code, a validation of the docs, a check of the `CHANGELOG`, an automated upload to pypi (for PRs to `master`), and a version check (for PRs to `master`).
    * A `.pylintrc` refines the behavior of pylint for mannkendall (Python).
 
 3. **Documentation:**
    * The mannkendall documentation is generated using Sphinx, with the Read-the-docs theme. The
-     compiled documentation is hosted on the `gh-pages` branch of the mannkendall Python repositiory.
+     compiled documentation is hosted on the `gh-pages` branch of the mannkendall Python repository.
    * Two docs-related Github Actions are implemented:
      - `CI_docs_check`: triggered on pull requests, compiles the docs and look for errors.
      - `CI_docs_publish`: triggered on push to master if the docs is changed, compiles the docs and
-        pushes it to the branch `gh-pages`, thus automatically publisihing it live. 
+        pushes it to the branch `gh-pages`, thus automatically publisihing it live.
 
 ## Styles
 
@@ -87,10 +83,6 @@ key facts about the mannkendall (Python) code and its repository:
 ```
     """ A brief one-liner description, that finishes with a dot.
 
-    Use some
-    multi-line space for
-    more detailed info.
-
     Args:
         x (float, int): variable x could be of 2 types ...
 
@@ -101,6 +93,10 @@ key facts about the mannkendall (Python) code and its repository:
 
     Returns:
         bool: some grand Truth about the World.
+
+    Use some
+    multi-line space for
+    more detailed info, ideally after the Args and Return bits.
 
     Example:
         If needed, you can specify chunks of code using code blocks::
@@ -124,10 +120,10 @@ You should feel free to use more of the tools offered by
 
 ## Step-by-step guide to contributing
 
-WIP.
+To contribute to the code, please fork the repository, and when ready, issue a PR back towards the `develop` branch of the mannkendall repo.
 
 ### Release mechanism ###
-1. Update the code version in `mk_version.py`.
-2. Pull request to `master` will automatically update the docs.
-3. Draft a new release from Github (will trigger new Zenodo DOI to be minted).
-4. Clone `master` locally, and send to pypi.
+1. Update the code version in `mk_version.py`. :warning: Stick to proper semantic versioning.
+2. When all changes are merged into `develop`, issue a Pull Request to `master`.
+3. Create a new "release" from Github. Doing so will trigger a new Zenodo DOI to be minted, upload the code to [testpypi](https://test.pypi.org/project/mannkendall/) and [pypi](https://pypi.org/project/mannkendall/), and compile/publish the [latest Python docs](https://mannkendall.github.io/Python/).
+
