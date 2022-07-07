@@ -10,6 +10,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [fpavogt, 2022.07.06] New CI Actions to check the code version and automate the pypi release.
 ### Changed:
  - [fpavogt, 2022.07.07] mannkendall is now "owned" by MeteoSwiss on pypi.
+ - [stasinos, 07/07/2022] Runtime optimizations for sen_slope()
 ### Deprecated:
 ### Removed:
 ### Fixed:
