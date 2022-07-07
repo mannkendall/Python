@@ -4,13 +4,12 @@ The format is inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [1.1.1] (released: TBD)
-
+## [1.1.1] (released: 2022.07.08)
 ### Added:
  - [fpavogt, 2022.07.06] New CI Actions to check the code version and automate the pypi release.
 ### Changed:
  - [fpavogt, 2022.07.07] mannkendall is now "owned" by MeteoSwiss on pypi.
- - [stasinos, 07/07/2022] Runtime optimizations for sen_slope()
+ - [stasinos, 2022.07.07] Runtime optimizations for sen_slope().
 ### Deprecated:
 ### Removed:
 ### Fixed:
