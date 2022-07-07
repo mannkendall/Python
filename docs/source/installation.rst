@@ -28,7 +28,7 @@ installed by ``pip`` if required:
 
 .. literalinclude:: ../../setup.py
     :language: python
-    :lines: 40-43
+    :lines: 40-42
 
 Testing the installation
 ------------------------

@@ -11,4 +11,4 @@ SPDX-License-Identifier: BSD-3-Clause
 This file contains the version of the code. It is used by the code itself, as well as setup.py.
 """
 
-VERSION = '1.1.0'
+VERSION = '1.1.1'
