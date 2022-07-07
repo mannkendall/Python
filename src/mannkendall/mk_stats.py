@@ -83,14 +83,15 @@ def sen_slope(obs_dts, obs, k_var, alpha_cl=90.):
     if not isinstance(k_var, (int, float)):
         raise Exception('Ouch ! The variance must be of type float, not: %s' % (type(k_var)))
 
+    # Let's only keep the values that are valid
+    obs_dts = obs_dts[~np.isnan(obs)]
+    obs = obs[~np.isnan(obs)]
+
     l = len(obs)
 
     # Let's compute the slope for all the possible pairs.
     d = np.array([item for i in range(0, l-1)
                   for item in list((obs[i+1:l] - obs[i])/mkt.dt_to_s(obs_dts[i+1:l] - obs_dts[i]))])
-
-    # Let's only keep the values that are valid
-    d = d[~np.isnan(d)]
 
     # Sort now to get the median and also to have
     # the array sorted for finding lcl, ucl below
